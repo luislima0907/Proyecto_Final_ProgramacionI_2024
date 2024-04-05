@@ -13,6 +13,7 @@ using CapaDeEntidad;
 using CapaDeNegocio;
 using FontAwesome.Sharp;
 using System.Windows.Media;
+using ClosedXML.Excel;
 
 namespace CapaDePresentacion
 {
@@ -240,9 +241,13 @@ namespace CapaDePresentacion
                     Usuario objUsuario = new Usuario() { IdUsuario = Convert.ToInt32(txtId.Text) };
 
                     bool respuesta = new CN_Usuario().EliminarUsuario(objUsuario, out mensaje);
-                    
+
                     // Eliminamos a un usuario por medio del indice de la fila seleccionada
-                    if (respuesta) dgvData.Rows.RemoveAt(Convert.ToInt32(txtIndice.Text));
+                    if (respuesta)
+                    {
+                        dgvData.Rows.RemoveAt(Convert.ToInt32(txtIndice.Text));
+                        LimpiarCamposDeTexto();
+                    }
 
                     // ejemplo de una sobrecarga de metodos
                     else MessageBox.Show(mensaje, "Mensaje", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
@@ -276,6 +281,71 @@ namespace CapaDePresentacion
             foreach (DataGridViewRow row in dgvData.Rows)
             {
                 row.Visible = true;
+            }
+        }
+
+        private void btnLimpiar_Click(object sender, EventArgs e)
+        {
+            LimpiarCamposDeTexto();
+        }
+
+        private void btnDescargarExcel_Click(object sender, EventArgs e)
+        {
+            // aqui estamos diciendo que si no hay ninguna fila por mostrar en el formulario, entonces que no haga la exportacion
+            if (dgvData.Rows.Count < 1) MessageBox.Show("No hay datos para exportar", "Mensaje", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            else
+            {
+                // sino, inicializamos nuestras tablas en el formulario para obtener su informacion y asi poder exportarla
+                DataTable dataTable = new DataTable();
+
+                // recorremos cada columna de nuestra tabla en el formulario 
+                foreach (DataGridViewColumn columna in dgvData.Columns)
+                {
+                    // la columna no tiene que estar vacia y a su vez tiene que estar visible para poder moverlas al excel
+                    if (columna.HeaderText != "" && columna.Visible) dataTable.Columns.Add(columna.HeaderText, typeof(string));
+                }
+
+                // recorremos cada fila de nuestra tabla en el formulario
+                foreach (DataGridViewRow fila in dgvData.Rows)
+                {
+                    if (fila.Visible)
+                    {
+                        // creamos un objeto que sirva como un array para almacenar los valores que tengan las filas y las ponemos en formato de texto
+                        dataTable.Rows.Add(new object[]
+                        {
+                            fila.Cells[2].Value.ToString(),
+                            fila.Cells[3].Value.ToString(),
+                            fila.Cells[4].Value.ToString(),
+                            fila.Cells[7].Value.ToString(),
+                            fila.Cells[9].Value.ToString(),
+                        });
+                    }
+                }
+
+                // inicializamos este objeto para poder guardar archivos en cualquier parte de la pc con la ayuda del nombre
+                SaveFileDialog guardarArchivo = new SaveFileDialog();
+                // le damos el formato por defecto que tendra el nombre del archivo al momento de quererlo guardar
+                guardarArchivo.FileName = string.Format($"Usuarios_Registrados_{DateTime.Now.ToString("dd-MM-yyyy")}.xlsx");
+
+                // que busque por defecto todos los archivos que terminen con esa extension
+                guardarArchivo.Filter = "Excel Files | *.xlsx";
+
+                // con esta validacion logramos guardar los cambios en excel
+                if (guardarArchivo.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        XLWorkbook xLWorkbook = new XLWorkbook();
+                        var hoja = xLWorkbook.Worksheets.Add(dataTable, "Registro_de_Usuarios");
+                        hoja.ColumnsUsed().AdjustToContents();
+                        xLWorkbook.SaveAs(guardarArchivo.FileName);
+                        MessageBox.Show("Registro de los usuarios generado con éxito", "Mensaje", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Error al generar con el registro de los usuarios", "Mensaje", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    }
+                }
             }
         }
     }

@@ -129,7 +129,7 @@ namespace CapaDePresentacion
         private void subMenuRegistrarCompra_Click(object sender, EventArgs e)
         {
             // Referenciamos al menu que contiene las compras e iniciamos su formulario
-            AbrirFormulario(menuCompras, new FormCompras());
+            AbrirFormulario(menuCompras, new FormCompras(usuarioActual));
         }
 
         private void subMenuVerDetalleDeLaCompra_Click(object sender, EventArgs e)
@@ -154,6 +154,12 @@ namespace CapaDePresentacion
         {
             // el metodo se ejecutara cuando tengamos un menu seleccionado, en este caso sera de tipo IconMenuItem, y tambien le pasamos el parametro de la instacia al Formulario reportes
             AbrirFormulario((IconMenuItem)sender, new FormReportes());
+        }
+
+        private void subMenuNegocio_Click(object sender, EventArgs e)
+        {
+            // aqui hacemos referencia al menu principal del mantenedor en el objeto, y luego iniciamos el formulario de categoria
+            AbrirFormulario(menuMantenedor, new FormNegocio());
         }
     }
 }
