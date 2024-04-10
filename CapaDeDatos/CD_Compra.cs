@@ -81,5 +81,111 @@ namespace CapaDeDatos
             }
             return Respuesta;
         }
+
+        public Compra ObtenerCompra(string numero)
+        {
+            Compra objCompra = new Compra();
+
+            using (SqlConnection oConexion = new SqlConnection(Conexion.cadena))
+            {
+                try
+                {
+                    // Instanciamos StringBuilder, ya que nos permite hacer consultas con saltos de linea en sql
+                    StringBuilder query = new StringBuilder();
+                    query.AppendLine("select c.IdCompra,");
+                    query.AppendLine("u.NombreCompleto, pr.Documento, pr.RazonSocial,");
+                    query.AppendLine("c.TipoDeDocumento, c.NumeroDeDocumento, c.MontoTotal,");
+                    query.AppendLine("convert(char(10), c.FechaDeRegistro,103)[FechaDeRegistro]");
+                    query.AppendLine("from COMPRA c");
+                    query.AppendLine("inner join USUARIO u on u.IdUsuario = c.IdUsuario");
+                    query.AppendLine("inner join PROVEEDOR pr on pr.IdProveedor = c.IdProveedor");
+                    query.AppendLine("where c.NumeroDeDocumento = @numero");
+
+                    // instanciamos la seleccion de la tabla con el query y la conexion a nuestra base de datos
+                    SqlCommand cmd = new SqlCommand(query.ToString(), oConexion);
+                    cmd.Parameters.AddWithValue("@numero", numero);
+                    // aqui le estamos diciendo que el tipo de comando que ejecutara sera un texto
+                    cmd.CommandType = CommandType.Text;
+                    oConexion.Open();
+
+                    // hacemos que pueda leer nuestro comando y ejecutarlo
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        // mientras pueda leer la seleccion que hicimos hacia la tabla de usuarios
+                        while (dr.Read())
+                        {
+                            objCompra = new Compra()
+                            {
+                                IdCompra = Convert.ToInt32(dr["IdCompra"]),
+                                oUsuario = new Usuario() { NombreCompleto = dr["NombreCompleto"].ToString() },
+                                oProveedor = new Proveedor() { Documento = dr["Documento"].ToString(), RazonSocial = dr["RazonSocial"].ToString() },
+                                TipoDeDocumento = dr["TipoDeDocumento"].ToString(),
+                                NumeroDeDocumento = dr["NumeroDeDocumento"].ToString(),
+                                MontoTotal = Convert.ToDecimal(dr["MontoTotal"].ToString()),
+                                FechaDeRegistro = dr["FechaDeRegistro"].ToString()
+                            };
+                            // que pueda crear una lista que contenga los usuarios de la tabla
+                            //lista.Add(new Usuario()
+                            //{
+                            //    // aqui convertimos el tipo de valor que contendra cada dato de nuestra tabla, tenemos que definirlo igual que cuando lo declaramos en sql
+                            //    IdUsuario = Convert.ToInt32(dr["IdUsuario"]),
+                            //    Documento = dr["Documento"].ToString(),
+                            //    NombreCompleto = dr["NombreCompleto"].ToString(),
+                            //    Correo = dr["Correo"].ToString(),
+                            //    Contraseña = dr["Contraseña"].ToString(),
+                            //    Estado = Convert.ToBoolean(dr["Estado"]),
+                            //    oRol = new Rol() { IdRol = Convert.ToInt32(dr["IdRol"]), Descripcion = dr["Descripcion"].ToString() }
+                            //});
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // si hay algun error a la hora de crear la lista, que la devuelva vacia
+                    objCompra = new Compra();
+                }
+            }
+            return objCompra;
+        }
+
+        public List<Detalle_Compra> ObtenerDetalleDeLaCompra(int IdCompra)
+        {
+            List<Detalle_Compra> oLista = new List<Detalle_Compra>();
+            try
+            {
+                using (SqlConnection oConexion = new SqlConnection(Conexion.cadena))
+                {
+                    oConexion.Open();
+                    StringBuilder query = new StringBuilder();
+
+                    query.AppendLine("select p.Nombre,dc.PrecioDeCompra,dc.Cantidad,dc.MontoTotal from DETALLE_COMPRA dc");
+                    query.AppendLine("inner join PRODUCTO p on p.IdProducto = dc.IdProducto");
+                    query.AppendLine("where dc.IdCompra = @IdCompra");
+
+                    SqlCommand cmd = new SqlCommand(query.ToString(), oConexion);
+                    cmd.Parameters.AddWithValue("IdCompra", IdCompra);
+                    cmd.CommandType = System.Data.CommandType.Text;
+
+                    using (SqlDataReader dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            oLista.Add(new Detalle_Compra()
+                            {
+                                oProducto = new Producto() { Nombre = dr["Nombre"].ToString() },
+                                PrecioDeCompra = Convert.ToDecimal(dr["PrecioDeCompra"].ToString()),
+                                Cantidad = Convert.ToInt32(dr["Cantidad"].ToString()),
+                                MontoTotal = Convert.ToDecimal(dr["MontoTotal"].ToString())
+                            });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                oLista = new List<Detalle_Compra>();
+            }
+            return oLista;
+        }
     }
 }

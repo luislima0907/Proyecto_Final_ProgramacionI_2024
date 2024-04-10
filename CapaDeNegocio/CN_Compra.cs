@@ -26,5 +26,19 @@ namespace CapaDeNegocio
             // devolvemos el metodo de listar la tabla de Compras
             return objcd_Compra.Registrar(objCompra, DetalleCompra, out Mensaje);
         }
+        public Compra ObtenerCompra(string numero)
+        {
+            // Obtenemos una compra por su numero de Documento
+            Compra oCompra = objcd_Compra.ObtenerCompra(numero);
+
+            // Si existe al menos una compra entonces nos crea una lista que almacene esa compra
+            if (oCompra.IdCompra != 0)
+            {
+                List<Detalle_Compra> oDetalleCompra = objcd_Compra.ObtenerDetalleDeLaCompra(oCompra.IdCompra);
+
+                oCompra.oDetalleCompra = oDetalleCompra;
+            }
+            return oCompra;
+        }
     }
 }

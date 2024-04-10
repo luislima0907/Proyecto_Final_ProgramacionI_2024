@@ -17,10 +17,10 @@ namespace CapaDePresentacion
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             // Aqui hacemos una instancia hacia la pantalla de iniciar sesion para que se pueda loguear el usuario
-            //Application.Run(new Login());
+            Application.Run(new Login());
 
             // Corremos el programa desde el formulario de inicio
-            Application.Run(new Inicio());
+            //Application.Run(new Inicio());
         }
     }
 }

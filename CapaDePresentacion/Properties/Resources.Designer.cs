@@ -81,6 +81,101 @@ namespace CapaDePresentacion.Properties {
         }
         
         /// <summary>
+        ///   Busca una cadena traducida similar a table.border {
+        ///    border-collapse: collapse;
+        ///}
+        ///
+        ///table.border th {
+        ///    text-align: center;
+        ///    padding: 5px;
+        ///    border: 1px solid black;
+        ///}
+        ///
+        ///table.border td {
+        ///    text-align: center;
+        ///    padding: 5px;
+        ///    border: 1px solid black;
+        ///}.
+        /// </summary>
+        internal static string DiseñoPlantillaCompra {
+            get {
+                return ResourceManager.GetString("DiseñoPlantillaCompra", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a table.border {
+        ///    border-collapse: collapse;
+        ///}
+        ///
+        ///table.border th {
+        ///    text-align: center;
+        ///    padding: 5px;
+        ///    border: 1px solid black;
+        ///}
+        ///
+        ///table.border td {
+        ///    text-align: center;
+        ///    padding: 5px;
+        ///    border: 1px solid black;
+        ///}
+        ///.
+        /// </summary>
+        internal static string DiseñoPlantillaVenta {
+            get {
+                return ResourceManager.GetString("DiseñoPlantillaVenta", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a &lt;!DOCTYPE html&gt;
+        ///&lt;html lang=&quot;en&quot;&gt;
+        ///&lt;head&gt;
+        ///    &lt;meta charset=&quot;UTF-8&quot;&gt;
+        ///    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+        ///    &lt;title&gt;Compras&lt;/title&gt;
+        ///    &lt;link rel=&quot;stylesheet&quot; href=&quot;DiseñoPlantillaCompra.css&quot;&gt;
+        ///&lt;/head&gt;
+        ///&lt;body&gt;
+        ///    &lt;table border=&quot;0&quot; style=&quot;width:100%&quot;&gt;
+        ///        &lt;tr&gt;
+        ///
+        ///            &lt;td style=&quot;width:15%&quot; valign=&quot;top&quot;&gt;&lt;/td&gt;
+        ///            &lt;td style=&quot;width:60%&quot; valign=&quot;top&quot; align=&quot;center&quot;&gt;
+        ///
+        ///                &lt;label style=&quot;font-size:20px;font-weight:bold;margin-bottom:10p [resto de la cadena truncado]&quot;;.
+        /// </summary>
+        internal static string PlantillaWebCompra {
+            get {
+                return ResourceManager.GetString("PlantillaWebCompra", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a &lt;!DOCTYPE html&gt;
+        ///&lt;html lang=&quot;en&quot;&gt;
+        ///&lt;head&gt;
+        ///    &lt;meta charset=&quot;UTF-8&quot;&gt;
+        ///    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+        ///    &lt;title&gt;Venta&lt;/title&gt;
+        ///    &lt;link rel=&quot;stylesheet&quot; href=&quot;DiseñoPlantillaVenta.css&quot;&gt;
+        ///&lt;/head&gt;
+        ///&lt;body&gt;
+        ///    &lt;table border=&quot;0&quot; style=&quot;width:100%&quot;&gt;
+        ///        &lt;tr&gt;
+        ///
+        ///            &lt;td style=&quot;width:15%&quot; valign=&quot;top&quot;&gt;&lt;/td&gt;
+        ///            &lt;td style=&quot;width:60%&quot; valign=&quot;top&quot; align=&quot;center&quot;&gt;
+        ///
+        ///                &lt;label style=&quot;font-size:20px;font-weight:bold;margin-bottom:10px&quot;&gt; [resto de la cadena truncado]&quot;;.
+        /// </summary>
+        internal static string PlantillaWebVenta {
+            get {
+                return ResourceManager.GetString("PlantillaWebVenta", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap pngwing_com {

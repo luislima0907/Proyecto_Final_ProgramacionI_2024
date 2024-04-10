@@ -1,0 +1,15 @@
+table.border {
+    border-collapse: collapse;
+}
+
+table.border th {
+    text-align: center;
+    padding: 5px;
+    border: 1px solid black;
+}
+
+table.border td {
+    text-align: center;
+    padding: 5px;
+    border: 1px solid black;
+}

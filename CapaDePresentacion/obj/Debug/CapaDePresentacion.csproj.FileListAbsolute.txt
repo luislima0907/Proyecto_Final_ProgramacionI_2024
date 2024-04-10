@@ -51,3 +51,11 @@ C:\Users\ruben\OneDrive\Desktop\Sistema_Transaccional_De_Ventas\CapaDePresentaci
 C:\Users\ruben\OneDrive\Desktop\Sistema_Transaccional_De_Ventas\CapaDePresentacion\obj\Debug\CapaDePresentacion.FormNegocio.resources
 C:\Users\ruben\OneDrive\Desktop\Sistema_Transaccional_De_Ventas\CapaDePresentacion\obj\Debug\CapaDePresentacion.Modales.MD_Proveedor.resources
 C:\Users\ruben\OneDrive\Desktop\Sistema_Transaccional_De_Ventas\CapaDePresentacion\obj\Debug\CapaDePresentacion.Modales.MD_Producto.resources
+C:\Users\ruben\OneDrive\Desktop\Sistema_Transaccional_De_Ventas\CapaDePresentacion\bin\Debug\BouncyCastle.Crypto.dll
+C:\Users\ruben\OneDrive\Desktop\Sistema_Transaccional_De_Ventas\CapaDePresentacion\bin\Debug\itextsharp.dll
+C:\Users\ruben\OneDrive\Desktop\Sistema_Transaccional_De_Ventas\CapaDePresentacion\bin\Debug\itextsharp.xmlworker.dll
+C:\Users\ruben\OneDrive\Desktop\Sistema_Transaccional_De_Ventas\CapaDePresentacion\bin\Debug\itextsharp.xml
+C:\Users\ruben\OneDrive\Desktop\Sistema_Transaccional_De_Ventas\CapaDePresentacion\obj\Debug\CapaDePresentacion.Modales.MD_Cliente.resources
+C:\Users\ruben\OneDrive\Desktop\Sistema_Transaccional_De_Ventas\CapaDePresentacion\obj\Debug\CapaDePresentacion.FormReporteDeCompras.resources
+C:\Users\ruben\OneDrive\Desktop\Sistema_Transaccional_De_Ventas\CapaDePresentacion\obj\Debug\CapaDePresentacion.FormReporteDeVentas.resources
+C:\Users\ruben\OneDrive\Desktop\Sistema_Transaccional_De_Ventas\CapaDePresentacion\obj\Debug\CapaDePresentacion.Modales.MD_AcercaDe.resources

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using CapaDeEntidad;
 using CapaDeNegocio;
+using CapaDePresentacion.Modales;
 using FontAwesome.Sharp;
 
 namespace CapaDePresentacion
@@ -117,7 +118,7 @@ namespace CapaDePresentacion
         private void subMenuRegistrarVenta_Click(object sender, EventArgs e)
         {
             // Referenciamos al menu que contiene las ventas e iniciamos su formulario
-            AbrirFormulario(menuVentas, new FormVentas());
+            AbrirFormulario(menuVentas, new FormVentas(usuarioActual));
         }
 
         private void subMenuVerDetalleDeLaVenta_Click(object sender, EventArgs e)
@@ -150,16 +151,37 @@ namespace CapaDePresentacion
             AbrirFormulario((IconMenuItem)sender, new FormProveedores());
         }
 
-        private void menuReportes_Click(object sender, EventArgs e)
-        {
-            // el metodo se ejecutara cuando tengamos un menu seleccionado, en este caso sera de tipo IconMenuItem, y tambien le pasamos el parametro de la instacia al Formulario reportes
-            AbrirFormulario((IconMenuItem)sender, new FormReportes());
-        }
-
         private void subMenuNegocio_Click(object sender, EventArgs e)
         {
             // aqui hacemos referencia al menu principal del mantenedor en el objeto, y luego iniciamos el formulario de categoria
             AbrirFormulario(menuMantenedor, new FormNegocio());
+        }
+
+        private void subMenuReporteDeCompras_Click(object sender, EventArgs e)
+        {
+            // aqui hacemos referencia al menu principal del mantenedor en el objeto, y luego iniciamos el formulario de categoria
+            AbrirFormulario(menuReportes, new FormReporteDeCompras());
+        }
+
+        private void subMenuReporteDeVentas_Click(object sender, EventArgs e)
+        {
+            // aqui hacemos referencia al menu principal del mantenedor en el objeto, y luego iniciamos el formulario de categoria
+            AbrirFormulario(menuReportes, new FormReporteDeVentas());
+        }
+
+        private void menuAcercaDe_Click(object sender, EventArgs e)
+        {
+            MD_AcercaDe mD_AcercaDe = new MD_AcercaDe();
+            mD_AcercaDe.ShowDialog();
+        }
+
+        // con este boton cerramos el formulario
+        private void btnSalir_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Desea salir?", "Mensaje", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) 
+            {
+                this.Close();
+            }
         }
     }
 }

@@ -190,8 +190,8 @@ namespace CapaDePresentacion
                 {
                     total += Convert.ToDecimal(fila.Cells["SubTotal"].Value.ToString());
                 }
-                txtTotalAPagar.Text = total.ToString("0.00");
             }
+            txtTotalAPagar.Text = total.ToString("0.00");
         }
 
         private void dgvData_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)

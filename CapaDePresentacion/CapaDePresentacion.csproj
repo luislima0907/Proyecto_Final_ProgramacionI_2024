@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BouncyCastle.Crypto, Version=1.8.9.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
+      <HintPath>packages\BouncyCastle.1.8.9\lib\BouncyCastle.Crypto.dll</HintPath>
+    </Reference>
     <Reference Include="ClosedXML, Version=0.102.2.0, Culture=neutral, PublicKeyToken=fd1eb21b62ae805b, processorArchitecture=MSIL">
       <HintPath>packages\ClosedXML.0.102.2\lib\netstandard2.0\ClosedXML.dll</HintPath>
     </Reference>
@@ -47,6 +50,12 @@
     </Reference>
     <Reference Include="Irony, Version=1.0.11.0, Culture=neutral, PublicKeyToken=ca48ace7223ead47, processorArchitecture=MSIL">
       <HintPath>packages\Irony.NetCore.1.0.11\lib\net461\Irony.dll</HintPath>
+    </Reference>
+    <Reference Include="itextsharp, Version=5.5.13.3, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>packages\iTextSharp.5.5.13.3\lib\itextsharp.dll</HintPath>
+    </Reference>
+    <Reference Include="itextsharp.xmlworker, Version=5.5.13.3, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>packages\itextsharp.xmlworker.5.5.13.3\lib\itextsharp.xmlworker.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -181,6 +190,18 @@
     <Compile Include="FormProveedores.Designer.cs">
       <DependentUpon>FormProveedores.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormReporteDeCompras.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormReporteDeCompras.Designer.cs">
+      <DependentUpon>FormReporteDeCompras.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormReporteDeVentas.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormReporteDeVentas.Designer.cs">
+      <DependentUpon>FormReporteDeVentas.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormReportes.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -210,6 +231,18 @@
     </Compile>
     <Compile Include="Login.Designer.cs">
       <DependentUpon>Login.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modales\MD_AcercaDe.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Modales\MD_AcercaDe.Designer.cs">
+      <DependentUpon>MD_AcercaDe.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modales\MD_Cliente.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Modales\MD_Cliente.Designer.cs">
+      <DependentUpon>MD_Cliente.cs</DependentUpon>
     </Compile>
     <Compile Include="Modales\MD_Producto.cs">
       <SubType>Form</SubType>
@@ -253,6 +286,12 @@
     <EmbeddedResource Include="FormProveedores.resx">
       <DependentUpon>FormProveedores.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="FormReporteDeCompras.resx">
+      <DependentUpon>FormReporteDeCompras.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormReporteDeVentas.resx">
+      <DependentUpon>FormReporteDeVentas.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormReportes.resx">
       <DependentUpon>FormReportes.cs</DependentUpon>
     </EmbeddedResource>
@@ -267,6 +306,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Login.resx">
       <DependentUpon>Login.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modales\MD_AcercaDe.resx">
+      <DependentUpon>MD_AcercaDe.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modales\MD_Cliente.resx">
+      <DependentUpon>MD_Cliente.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Modales\MD_Producto.resx">
       <DependentUpon>MD_Producto.cs</DependentUpon>
@@ -328,6 +373,18 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\trash25.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\DiseñoPlantillaCompra.css" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\DiseñoPlantillaVenta.css" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PlantillaWebCompra.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PlantillaWebVenta.html" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
