@@ -9,6 +9,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -62,57 +63,84 @@ namespace CapaDePresentacion
         {
             string mensaje = string.Empty;
 
-            Cliente objCliente = new Cliente()
-            {
-                // Obtenemos la informacion que ingresemos en los campos de texto y la almacenamos en nuestra base de datos
-                IdCliente = Convert.ToInt32(txtId.Text),
-                Documento = txtDocumento.Text,
-                NombreCompleto = txtNombreCompleto.Text,
-                Correo = txtCorreo.Text,
-                Telefono = txtTelefono.Text,
-                Estado = Convert.ToInt32(((OpcionCombo)cboEstado.SelectedItem).Valor) == 1 ? true : false
-            };
+            // hacemos la validacion de un numero de documento que tenga 6 digitos con la ayuda de las expresiones regulares
+            string patronDelNumeroDeDocumento = @"\d\d\d\d\d\d"; // expresion regular para el numero de documento
+            Regex confirmarPatronDelDocumento = new Regex(patronDelNumeroDeDocumento); // usamos regex para guardar la expresion regular y poder compararla mas adelante
+            MatchCollection numeroDeDocumento = confirmarPatronDelDocumento.Matches(txtDocumento.Text); // usamos matchcollection para que compare con la caja de texto del documento
 
-            if (objCliente.IdCliente == 0)
-            {
-                // de esta manera generamos el id del nuevo Cliente
-                int idClienteGenerado = new CN_Cliente().RegistrarCliente(objCliente, out mensaje);
+            // hacemos la validacion de un correo electronico que tenga el siguiente formato: nombre_de_usuario@nombre_de_dominio.com
+            string formatoDelCorreo = @"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"; // expresion regular para el correo del usuario
+            Regex confirmarElFormatoDelCorreo = new Regex(formatoDelCorreo); // usamos regex para guardar la expresion regular y poder compararla mas adelante
+            MatchCollection correoDelUsuario = confirmarElFormatoDelCorreo.Matches(txtCorreo.Text); // usamos matchcollection para que compare con la caja de texto del correo
 
-                // Como el id del nuevo Cliente no puede ser 0 entonces se hace esta validacion
-                if (idClienteGenerado != 0)
+            // hacemos la validacion de un numero de documento que tenga 6 digitos con la ayuda de las expresiones regulares
+            string patronDelNumeroDeTelefono = @"\+502\s\d\d\d\d\s\d\d\d\d"; // expresion regular para el numero de documento
+            Regex confirmarPatronDelTelefono = new Regex(patronDelNumeroDeTelefono); // usamos regex para guardar la expresion regular y poder compararla mas adelante
+            MatchCollection numeroDeTelefono = confirmarPatronDelTelefono.Matches(txtTelefono.Text); // usamos matchcollection para que compare con la caja de texto del documento
+
+            // hacemos la validacion de un correo electronico que tenga el siguiente formato: nombre_de_usuario@nombre_de_dominio.com
+            string formatoDelNombre = @"^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]+(?:\s+[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]+){1,5}(?<!\s)$"; // expresion regular para el correo del usuario
+            Regex confirmarElFormatoDelNombre = new Regex(formatoDelNombre); // usamos regex para guardar la expresion regular y poder compararla mas adelante
+            MatchCollection nombreDelCliente = confirmarElFormatoDelNombre.Matches(txtNombreCompleto.Text); // usamos matchcollection para que compare con la caja de texto del correo
+
+            if(nombreDelCliente.Count > 0 && numeroDeTelefono.Count > 0 && numeroDeDocumento.Count > 0 && correoDelUsuario.Count > 0)
+            {
+                Cliente objCliente = new Cliente()
                 {
-                    dgvData.Rows.Add(new object[] {"",idClienteGenerado,txtDocumento.Text,txtNombreCompleto.Text,txtCorreo.Text,txtTelefono.Text,
-                // De esta manera accedemos a los valores de una clase para agregarlos a un objeto
-                ((OpcionCombo)cboEstado.SelectedItem).Valor.ToString(),
-                ((OpcionCombo)cboEstado.SelectedItem).Texto.ToString()
-                });
+                    // Obtenemos la informacion que ingresemos en los campos de texto y la almacenamos en nuestra base de datos
+                    IdCliente = Convert.ToInt32(txtId.Text),
+                    Documento = txtDocumento.Text,
+                    NombreCompleto = txtNombreCompleto.Text,
+                    Correo = txtCorreo.Text,
+                    Telefono = txtTelefono.Text,
+                    Estado = Convert.ToInt32(((OpcionCombo)cboEstado.SelectedItem).Valor) == 1 ? true : false
+                };
 
-                    // al momento de agregar un Cliente, que limpie los campos de texto que usamos anteriormente
-                    LimpiarCamposDeTexto();
+                if (objCliente.IdCliente == 0)
+                {
+                    // de esta manera generamos el id del nuevo Cliente
+                    int idClienteGenerado = new CN_Cliente().RegistrarCliente(objCliente, out mensaje);
+
+                    // Como el id del nuevo Cliente no puede ser 0 entonces se hace esta validacion
+                    if (idClienteGenerado != 0)
+                    {
+                        dgvData.Rows.Add(new object[] {"",idClienteGenerado,txtDocumento.Text,txtNombreCompleto.Text,txtCorreo.Text,txtTelefono.Text,
+                        // De esta manera accedemos a los valores de una clase para agregarlos a un objeto
+                        ((OpcionCombo)cboEstado.SelectedItem).Valor.ToString(),
+                        ((OpcionCombo)cboEstado.SelectedItem).Texto.ToString()
+                        });
+
+                        // al momento de agregar un Cliente, que limpie los campos de texto que usamos anteriormente
+                        LimpiarCamposDeTexto();
+                    }
+                    else MessageBox.Show(mensaje);
                 }
-                else MessageBox.Show(mensaje);
+                else
+                {
+                    bool resultado = new CN_Cliente().EditarCliente(objCliente, out mensaje);
+
+                    if (resultado)
+                    {
+                        // Obtenemos el indice de la fila seleccionada en nuestro formulario de Clientes
+                        DataGridViewRow row = dgvData.Rows[Convert.ToInt32(txtIndice.Text)];
+
+                        // Obtenemos los demas datos de la fila seleccionada
+                        row.Cells["Id"].Value = txtId.Text;
+                        row.Cells["Documento"].Value = txtDocumento.Text;
+                        row.Cells["NombreCompleto"].Value = txtNombreCompleto.Text;
+                        row.Cells["Correo"].Value = txtCorreo.Text;
+                        row.Cells["Telefono"].Value = txtTelefono.Text;
+                        row.Cells["EstadoValor"].Value = ((OpcionCombo)cboEstado.SelectedItem).Valor.ToString();
+                        row.Cells["Estado"].Value = ((OpcionCombo)cboEstado.SelectedItem).Texto.ToString();
+
+                        LimpiarCamposDeTexto();
+                    }
+                    else MessageBox.Show(mensaje);
+                }
             }
             else
             {
-                bool resultado = new CN_Cliente().EditarCliente(objCliente, out mensaje);
-
-                if (resultado)
-                {
-                    // Obtenemos el indice de la fila seleccionada en nuestro formulario de Clientes
-                    DataGridViewRow row = dgvData.Rows[Convert.ToInt32(txtIndice.Text)];
-                    
-                    // Obtenemos los demas datos de la fila seleccionada
-                    row.Cells["Id"].Value = txtId.Text;
-                    row.Cells["Documento"].Value = txtDocumento.Text;
-                    row.Cells["NombreCompleto"].Value = txtNombreCompleto.Text;
-                    row.Cells["Correo"].Value = txtCorreo.Text;
-                    row.Cells["Telefono"].Value = txtTelefono.Text;
-                    row.Cells["EstadoValor"].Value = ((OpcionCombo)cboEstado.SelectedItem).Valor.ToString();
-                    row.Cells["Estado"].Value = ((OpcionCombo)cboEstado.SelectedItem).Texto.ToString();
-
-                    LimpiarCamposDeTexto();
-                }
-                else MessageBox.Show(mensaje);
+                MessageBox.Show("Asegurese de ingresar un formato valido:\n\nDocumento: 6 digitos enteros sin espacios.\n\nNombre Completo: NOMBRE APELLIDO.\n\nCorreo: nombre_del_cliente@nombre_de_dominio.com.\n\nTelefono: +502 4_digitos_enteros 4_digitos_enteros");
             }
         }
 

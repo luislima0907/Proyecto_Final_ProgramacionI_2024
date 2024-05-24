@@ -12,6 +12,8 @@ using CapaDeNegocio;
 using CapaDePresentacion.Modales;
 using FontAwesome.Sharp;
 
+// crear un proyeto con windows forms y xml
+// hacer
 namespace CapaDePresentacion
 {
     public partial class Inicio : Form
@@ -50,7 +52,6 @@ namespace CapaDePresentacion
                     iconMenu.Visible = false;
                 }
             }
-
             // al momento de pasar al formulario de inicio, que nos muestre el nombre del usuario que acaba de ingresar, o bien, su tipo de usuario.
             lblUsuario.Text = usuarioActual.NombreCompleto;
         }
@@ -88,7 +89,7 @@ namespace CapaDePresentacion
             formulario.Dock = DockStyle.Fill;
             
             // Que al abrirse tenga un color de fondo, en este caso el verde
-            formulario.BackColor = Color.Green;
+            formulario.BackColor = Color.Black;
 
             // Una vez ya definidas las propiedades del formulario, se procede a agregarlo al contenedor
             contenedor.Controls.Add(formulario);
@@ -178,7 +179,7 @@ namespace CapaDePresentacion
         // con este boton cerramos el formulario
         private void btnSalir_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Desea salir?", "Mensaje", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) 
+            if (MessageBox.Show("¿Desea salir del programa?\n\nTendra que iniciar sesion nuevamente para ingresar al sistema", "Mensaje", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) 
             {
                 this.Close();
             }

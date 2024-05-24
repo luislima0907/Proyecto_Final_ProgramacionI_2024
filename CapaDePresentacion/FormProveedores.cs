@@ -9,6 +9,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -62,57 +63,84 @@ namespace CapaDePresentacion
         {
             string mensaje = string.Empty;
 
-            Proveedor objProveedor = new Proveedor()
-            {
-                // Obtenemos la informacion que ingresemos en los campos de texto y la almacenamos en nuestra base de datos
-                IdProveedor = Convert.ToInt32(txtId.Text),
-                Documento = txtDocumento.Text,
-                RazonSocial = txtRazonSocial.Text,
-                Correo = txtCorreo.Text,
-                Telefono = txtTelefono.Text,
-                Estado = Convert.ToInt32(((OpcionCombo)cboEstado.SelectedItem).Valor) == 1 ? true : false
-            };
+            // hacemos la validacion de un numero de documento que tenga 6 digitos con la ayuda de las expresiones regulares
+            string patronDelNumeroDeDocumento = @"\d\d\d\d\d\d"; // expresion regular para el numero de documento
+            Regex confirmarPatronDelDocumento = new Regex(patronDelNumeroDeDocumento); // usamos regex para guardar la expresion regular y poder compararla mas adelante
+            MatchCollection numeroDeDocumento = confirmarPatronDelDocumento.Matches(txtDocumento.Text); // usamos matchcollection para que compare con la caja de texto del documento
 
-            if (objProveedor.IdProveedor == 0)
-            {
-                // de esta manera generamos el id del nuevo Proveedor
-                int idProveedorGenerado = new CN_Proveedor().RegistrarProveedor(objProveedor, out mensaje);
+            // hacemos la validacion de un correo electronico que tenga el siguiente formato: nombre_de_usuario@nombre_de_dominio.com
+            string formatoDelCorreo = @"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"; // expresion regular para el correo del usuario
+            Regex confirmarElFormatoDelCorreo = new Regex(formatoDelCorreo); // usamos regex para guardar la expresion regular y poder compararla mas adelante
+            MatchCollection correoDelUsuario = confirmarElFormatoDelCorreo.Matches(txtCorreo.Text); // usamos matchcollection para que compare con la caja de texto del correo
 
-                // Como el id del nuevo Proveedor no puede ser 0 entonces se hace esta validacion
-                if (idProveedorGenerado != 0)
+            // hacemos la validacion de un numero de documento que tenga 6 digitos con la ayuda de las expresiones regulares
+            string patronDelNumeroDeTelefono = @"\+502\s\d\d\d\d\s\d\d\d\d"; // expresion regular para el numero de documento
+            Regex confirmarPatronDelTelefono = new Regex(patronDelNumeroDeTelefono); // usamos regex para guardar la expresion regular y poder compararla mas adelante
+            MatchCollection numeroDeTelefono = confirmarPatronDelTelefono.Matches(txtTelefono.Text); // usamos matchcollection para que compare con la caja de texto del documento
+
+            // hacemos la validacion de un correo electronico que tenga el siguiente formato: nombre_de_usuario@nombre_de_dominio.com
+            string formatoDeLaRazonSocial = @"^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]+(?:\s+[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]+){1,5}(?<!\s)$"; // expresion regular para el correo del usuario
+            Regex confirmarElFormatoDeLaRazonSocial = new Regex(formatoDeLaRazonSocial); // usamos regex para guardar la expresion regular y poder compararla mas adelante
+            MatchCollection razonSocial = confirmarElFormatoDeLaRazonSocial.Matches(txtRazonSocial.Text); // usamos matchcollection para que compare con la caja de texto del correo
+
+            if (razonSocial.Count > 0 && numeroDeDocumento.Count > 0 && razonSocial.Count > 0 && numeroDeTelefono.Count > 0)
+            {
+                Proveedor objProveedor = new Proveedor()
                 {
-                    dgvData.Rows.Add(new object[] {"",idProveedorGenerado,txtDocumento.Text,txtRazonSocial.Text,txtCorreo.Text,txtTelefono.Text,
-                // De esta manera accedemos a los valores de una clase para agregarlos a un objeto
-                ((OpcionCombo)cboEstado.SelectedItem).Valor.ToString(),
-                ((OpcionCombo)cboEstado.SelectedItem).Texto.ToString()
-                });
+                    // Obtenemos la informacion que ingresemos en los campos de texto y la almacenamos en nuestra base de datos
+                    IdProveedor = Convert.ToInt32(txtId.Text),
+                    Documento = txtDocumento.Text,
+                    RazonSocial = txtRazonSocial.Text,
+                    Correo = txtCorreo.Text,
+                    Telefono = txtTelefono.Text,
+                    Estado = Convert.ToInt32(((OpcionCombo)cboEstado.SelectedItem).Valor) == 1 ? true : false
+                };
 
-                    // al momento de agregar un Proveedor, que limpie los campos de texto que usamos anteriormente
-                    LimpiarCamposDeTexto();
+                if (objProveedor.IdProveedor == 0)
+                {
+                    // de esta manera generamos el id del nuevo Proveedor
+                    int idProveedorGenerado = new CN_Proveedor().RegistrarProveedor(objProveedor, out mensaje);
+
+                    // Como el id del nuevo Proveedor no puede ser 0 entonces se hace esta validacion
+                    if (idProveedorGenerado != 0)
+                    {
+                        dgvData.Rows.Add(new object[] {"",idProveedorGenerado,txtDocumento.Text,txtRazonSocial.Text,txtCorreo.Text,txtTelefono.Text,
+                        // De esta manera accedemos a los valores de una clase para agregarlos a un objeto
+                        ((OpcionCombo)cboEstado.SelectedItem).Valor.ToString(),
+                        ((OpcionCombo)cboEstado.SelectedItem).Texto.ToString()
+                        });
+
+                        // al momento de agregar un Proveedor, que limpie los campos de texto que usamos anteriormente
+                        LimpiarCamposDeTexto();
+                    }
+                    else MessageBox.Show(mensaje);
                 }
-                else MessageBox.Show(mensaje);
+                else
+                {
+                    bool resultado = new CN_Proveedor().EditarProveedor(objProveedor, out mensaje);
+
+                    if (resultado)
+                    {
+                        // Obtenemos el indice de la fila seleccionada en nuestro formulario de Proveedors
+                        DataGridViewRow row = dgvData.Rows[Convert.ToInt32(txtIndice.Text)];
+
+                        // Obtenemos los demas datos de la fila seleccionada
+                        row.Cells["Id"].Value = txtId.Text;
+                        row.Cells["Documento"].Value = txtDocumento.Text;
+                        row.Cells["RazonSocial"].Value = txtRazonSocial.Text;
+                        row.Cells["Correo"].Value = txtCorreo.Text;
+                        row.Cells["Telefono"].Value = txtTelefono.Text;
+                        row.Cells["EstadoValor"].Value = ((OpcionCombo)cboEstado.SelectedItem).Valor.ToString();
+                        row.Cells["Estado"].Value = ((OpcionCombo)cboEstado.SelectedItem).Texto.ToString();
+
+                        LimpiarCamposDeTexto();
+                    }
+                    else MessageBox.Show(mensaje);
+                }
             }
             else
             {
-                bool resultado = new CN_Proveedor().EditarProveedor(objProveedor, out mensaje);
-
-                if (resultado)
-                {
-                    // Obtenemos el indice de la fila seleccionada en nuestro formulario de Proveedors
-                    DataGridViewRow row = dgvData.Rows[Convert.ToInt32(txtIndice.Text)];
-                    
-                    // Obtenemos los demas datos de la fila seleccionada
-                    row.Cells["Id"].Value = txtId.Text;
-                    row.Cells["Documento"].Value = txtDocumento.Text;
-                    row.Cells["RazonSocial"].Value = txtRazonSocial.Text;
-                    row.Cells["Correo"].Value = txtCorreo.Text;
-                    row.Cells["Telefono"].Value = txtTelefono.Text;
-                    row.Cells["EstadoValor"].Value = ((OpcionCombo)cboEstado.SelectedItem).Valor.ToString();
-                    row.Cells["Estado"].Value = ((OpcionCombo)cboEstado.SelectedItem).Texto.ToString();
-
-                    LimpiarCamposDeTexto();
-                }
-                else MessageBox.Show(mensaje);
+                MessageBox.Show("Asegurese de ingresar un formato valido:\n\nDocumento: 6 digitos enteros sin espacios.\n\nRazon Social: Al menos dos palabras separadas que describan su razon.\n\nCorreo: nombre_del_proveedor@nombre_de_dominio.com.\n\nTelefono: +502 4_digitos_enteros 4_digitos_enteros");
             }
         }
 
@@ -156,7 +184,6 @@ namespace CapaDePresentacion
 
         private void dgvData_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-
             // Se activa cuando hacemos click en el boton que contiene el icono para seleccionar un Proveedor
             if (dgvData.Columns[e.ColumnIndex].Name == "btnSeleccionar")
             {

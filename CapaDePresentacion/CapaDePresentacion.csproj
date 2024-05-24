@@ -347,6 +347,10 @@
     <None Include="Resources\pngwing.com.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CapaDeDatos\CapaDeDatos.csproj">
+      <Project>{37da4591-4096-451e-ab8a-d9d13f2a407c}</Project>
+      <Name>CapaDeDatos</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CapaDeEntidad\CapaDeEntidad.csproj">
       <Project>{872de939-1604-454f-8823-314685c30796}</Project>
       <Name>CapaDeEntidad</Name>

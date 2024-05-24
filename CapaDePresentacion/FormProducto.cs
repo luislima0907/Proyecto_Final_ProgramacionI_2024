@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ClosedXML.Excel;
+using System.Text.RegularExpressions;
 
 namespace CapaDePresentacion
 {
@@ -87,26 +88,43 @@ namespace CapaDePresentacion
         {
             string mensaje = string.Empty;
 
-            Producto objProducto = new Producto()
-            {
-                // Obtenemos la informacion que ingresemos en los campos de texto y la almacenamos en nuestra base de datos
-                IdProducto = Convert.ToInt32(txtId.Text),
-                Codigo = txtCodigo.Text,
-                Nombre = txtNombre.Text,
-                Descripcion = txtDescripcion.Text,
-                oCategoria = new Categoria() { IdCategoria = Convert.ToInt32(((OpcionCombo)cboCategoria.SelectedItem).Valor) },
-                Estado = Convert.ToInt32(((OpcionCombo)cboEstado.SelectedItem).Valor) == 1 ? true : false
-            };
+            // hacemos la validacion de un numero de documento que tenga 6 digitos con la ayuda de las expresiones regulares
+            string patronDelCodigo = @"\w-\d\d\d"; // expresion regular para el numero de documento
+            Regex confirmarPatronDelCodigo = new Regex(patronDelCodigo); // usamos regex para guardar la expresion regular y poder compararla mas adelante
+            MatchCollection codigoDelProducto = confirmarPatronDelCodigo.Matches(txtCodigo.Text); // usamos matchcollection para que compare con la caja de texto del documento
 
-            if (objProducto.IdProducto == 0)
-            {
-                // de esta manera generamos el id del nuevo Producto
-                int idProductoGenerado = new CN_Producto().RegistrarProducto(objProducto, out mensaje);
+            // hacemos la validacion de un correo electronico que tenga el siguiente formato: nombre_de_usuario@nombre_de_dominio.com
+            string formatoDelNombre = @"^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]+(?:\s+[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]+){1,5}(?<!\s)$"; // expresion regular para el correo del usuario
+            Regex confirmarElFormatoDelNombre = new Regex(formatoDelNombre); // usamos regex para guardar la expresion regular y poder compararla mas adelante
+            MatchCollection nombreDelProducto = confirmarElFormatoDelNombre.Matches(txtNombre.Text); // usamos matchcollection para que compare con la caja de texto del correo
 
-                // Como el id del nuevo Producto no puede ser 0 entonces se hace esta validacion
-                if (idProductoGenerado != 0)
+            // hacemos la validacion de un correo electronico que tenga el siguiente formato: nombre_de_usuario@nombre_de_dominio.com
+            string formatoDeLaDescripcion = @"^\d+(\.\d+)?\s[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]+(?:\s[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]+)*$"; // expresion regular para el correo del usuario
+            Regex confirmarElFormatoDeLaDescripcion = new Regex(formatoDeLaDescripcion); // usamos regex para guardar la expresion regular y poder compararla mas adelante
+            MatchCollection descripcionDelProducto = confirmarElFormatoDeLaDescripcion.Matches(txtDescripcion.Text); // usamos matchcollection para que compare con la caja de texto del correo
+
+            if (nombreDelProducto.Count > 0 && codigoDelProducto.Count > 0 && descripcionDelProducto.Count > 0)
+            {
+                Producto objProducto = new Producto()
                 {
-                    dgvData.Rows.Add(new object[] {
+                    // Obtenemos la informacion que ingresemos en los campos de texto y la almacenamos en nuestra base de datos
+                    IdProducto = Convert.ToInt32(txtId.Text),
+                    Codigo = txtCodigo.Text,
+                    Nombre = txtNombre.Text,
+                    Descripcion = txtDescripcion.Text,
+                    oCategoria = new Categoria() { IdCategoria = Convert.ToInt32(((OpcionCombo)cboCategoria.SelectedItem).Valor) },
+                    Estado = Convert.ToInt32(((OpcionCombo)cboEstado.SelectedItem).Valor) == 1 ? true : false
+                };
+
+                if (objProducto.IdProducto == 0)
+                {
+                    // de esta manera generamos el id del nuevo Producto
+                    int idProductoGenerado = new CN_Producto().RegistrarProducto(objProducto, out mensaje);
+
+                    // Como el id del nuevo Producto no puede ser 0 entonces se hace esta validacion
+                    if (idProductoGenerado != 0)
+                    {
+                        dgvData.Rows.Add(new object[] {
                         "",
                         idProductoGenerado,
                         txtCodigo.Text,
@@ -121,39 +139,44 @@ namespace CapaDePresentacion
                         "0",
                         ((OpcionCombo)cboEstado.SelectedItem).Valor.ToString(),
                         ((OpcionCombo)cboEstado.SelectedItem).Texto.ToString()
-                    });
+                        });
 
-                    // al momento de agregar un Producto, que limpie los campos de texto que usamos anteriormente
-                    LimpiarCamposDeTexto();
+                        // al momento de agregar un Producto, que limpie los campos de texto que usamos anteriormente
+                        LimpiarCamposDeTexto();
+                    }
+                    else MessageBox.Show(mensaje);
                 }
-                else MessageBox.Show(mensaje);
+                else
+                {
+                    bool resultado = new CN_Producto().EditarProducto(objProducto, out mensaje);
+
+                    if (resultado)
+                    {
+                        // Obtenemos el indice de la fila seleccionada en nuestro formulario de Productos
+                        DataGridViewRow row = dgvData.Rows[Convert.ToInt32(txtIndice.Text)];
+                        // Obtenemos los demas datos de la fila seleccionada
+                        row.Cells["Id"].Value = txtId.Text;
+                        row.Cells["Codigo"].Value = txtCodigo.Text;
+                        row.Cells["Nombre"].Value = txtNombre.Text;
+                        row.Cells["Descripcion"].Value = txtDescripcion.Text;
+                        row.Cells["IdCategoria"].Value = ((OpcionCombo)cboCategoria.SelectedItem).Valor.ToString();
+                        row.Cells["Categoria"].Value = ((OpcionCombo)cboCategoria.SelectedItem).Texto.ToString();
+
+                        //row.Cells["PrecioDeCompra"].Value = ((OpcionCombo)cboEstado.SelectedItem).Valor.ToString();
+                        //row.Cells["PrecioDeVenta"].Value = ((OpcionCombo)cboEstado.SelectedItem).Valor.ToString();
+                        //row.Cells["Stock"].Value = ((OpcionCombo)cboEstado.SelectedItem).Valor.ToString();
+
+                        row.Cells["EstadoValor"].Value = ((OpcionCombo)cboEstado.SelectedItem).Valor.ToString();
+                        row.Cells["Estado"].Value = ((OpcionCombo)cboEstado.SelectedItem).Texto.ToString();
+
+                        LimpiarCamposDeTexto();
+                    }
+                    else MessageBox.Show(mensaje);
+                }
             }
             else
             {
-                bool resultado = new CN_Producto().EditarProducto(objProducto, out mensaje);
-
-                if (resultado)
-                {
-                    // Obtenemos el indice de la fila seleccionada en nuestro formulario de Productos
-                    DataGridViewRow row = dgvData.Rows[Convert.ToInt32(txtIndice.Text)];
-                    // Obtenemos los demas datos de la fila seleccionada
-                    row.Cells["Id"].Value = txtId.Text;
-                    row.Cells["Codigo"].Value = txtCodigo.Text;
-                    row.Cells["Nombre"].Value = txtNombre.Text;
-                    row.Cells["Descripcion"].Value = txtDescripcion.Text;
-                    row.Cells["IdCategoria"].Value = ((OpcionCombo)cboCategoria.SelectedItem).Valor.ToString();
-                    row.Cells["Categoria"].Value = ((OpcionCombo)cboCategoria.SelectedItem).Texto.ToString();
-                    
-                    //row.Cells["PrecioDeCompra"].Value = ((OpcionCombo)cboEstado.SelectedItem).Valor.ToString();
-                    //row.Cells["PrecioDeVenta"].Value = ((OpcionCombo)cboEstado.SelectedItem).Valor.ToString();
-                    //row.Cells["Stock"].Value = ((OpcionCombo)cboEstado.SelectedItem).Valor.ToString();
-                    
-                    row.Cells["EstadoValor"].Value = ((OpcionCombo)cboEstado.SelectedItem).Valor.ToString();
-                    row.Cells["Estado"].Value = ((OpcionCombo)cboEstado.SelectedItem).Texto.ToString();
-
-                    LimpiarCamposDeTexto();
-                }
-                else MessageBox.Show(mensaje);
+                MessageBox.Show("Asegurese de ingresar un formato valido:\n\nCodigo: Una_letra-3_digitos_enteros_sin_espacios.\n\nNombre: Al menos dos palabras separadas que describan su el nombre.\n\nDescripcion: CANTIDAD UNIDAD_DE_MEDIDA");
             }
         }
 

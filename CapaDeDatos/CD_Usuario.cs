@@ -65,7 +65,7 @@ namespace CapaDeDatos
         {
             int idUsuarioGenerado = 0;
             Mensaje = string.Empty;
-
+            
             try
             {
                 using (SqlConnection oConexion = new SqlConnection(Conexion.cadena))
