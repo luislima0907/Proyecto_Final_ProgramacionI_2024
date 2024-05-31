@@ -1,0 +1,812 @@
+-- El create database no se utilizo porque se debe omitir al momento de crear el ejecutable
+-- ademas para que funcione el proyecto tendra que instalar SQL Server en su maquina
+
+USE SISTEMA_DE_TIENDA_LUIGELICA
+
+-- GO nos sirve para indicarle al sistema que linea debe ejecutar a continuacion
+GO
+
+create table ROL(
+-- Con la palabra clave identity, generamos un autenticador aleatorio pero que siempre sera unico y no se volvera a repetir
+IdRol int primary key identity,
+Descripcion varchar(50),
+-- El metodo getdate() nos sirve para obtener la fecha de hoy y establecerla como un valor por defecto
+FechaDeRegistro datetime default getdate()
+)
+
+GO
+
+create table PERMISO(
+IdPermiso int primary key identity,
+-- Aqui hacemos una referencia a la llave primaria de la tabla ROL, para convertirla en una llave foranea y que tenga relacion con las demas tablas que le queramos agregar un ID.
+IdRol int references ROL(IdRol),
+NombreDeMenu varchar(100),
+FechaDeRegistro datetime default getdate()
+)
+
+GO
+
+create table PROVEEDOR(
+IdProveedor int primary key identity,
+Documento varchar(50),
+RazonSocial varchar(50),
+Correo varchar(50),
+Telefono varchar(50),
+-- con bit, solo almacenamos 1 y 0
+Estado bit,
+FechaDeRegistro datetime default getdate()
+)
+
+GO
+
+create table CLIENTE(
+IdCliente int primary key identity,
+Documento varchar(50),
+NombreCompleto varchar(50),
+Correo varchar(50),
+Telefono varchar(50),
+Estado bit,
+FechaDeRegistro datetime default getdate()
+)
+
+GO
+
+create table USUARIO(
+IdUsuario int primary key identity,
+IdRol int references ROL(IdRol),
+Documento varchar(50),
+NombreCompleto varchar(50),
+Contraseña varchar(50),
+Correo varchar(50),
+Estado bit,
+FechaDeRegistro datetime default getdate()
+)
+
+GO
+
+create table CATEGORIA(
+IdCategoria int primary key identity,
+Descripcion varchar(100),
+Estado bit,
+FechaDeRegistro datetime default getdate()
+)
+
+GO
+
+create table PRODUCTO(
+IdProducto int primary key identity,
+IdCategoria int references CATEGORIA(idCategoria),
+Descripcion varchar(50),
+Codigo varchar(50),
+Nombre varchar(50),
+-- Con not null decimos que su valor no puede estar vacio y como por defecto se lo asignamos en 0
+Stock int not null default 0,
+PrecioDeCompra decimal(10, 2) default 0,
+PrecioDeVenta decimal(10, 2) default 0,
+Estado bit,
+FechaDeRegistro datetime default getdate()
+)
+
+
+GO
+
+create table COMPRA(
+IdCompra int primary key identity,
+IdUsuario int references USUARIO(IdUsuario),
+IdProveedor int references PROVEEDOR(IdProveedor),
+TipoDeDocumento varchar(50),
+NumeroDeDocumento varchar(50),
+MontoTotal decimal(10, 2),
+FechaDeRegistro datetime default getdate()
+)
+
+GO
+
+create table DETALLE_COMPRA(
+IdDetalleDeLaCompra int primary key identity,
+IdCompra int references COMPRA(IdCompra),
+IdProducto int references PRODUCTO(IdProducto),
+PrecioDeCompra decimal(10, 2) default 0,
+PrecioDeVenta decimal(10, 2) default 0,
+Cantidad int,
+MontoTotal decimal(10, 2),
+FechaDeRegistro datetime default getdate()
+)
+
+GO
+
+create table VENTA(
+Idventa int primary key identity,
+IdUsuario int references USUARIO(IdUsuario),
+TipoDeDocumento varchar(50),
+NumeroDeDocumento varchar(50),
+-- Documento y Nombre del cliente se crean para registrar bien a quien se le hizo la venta y asi no alterar luego su nombre o documento
+DocumentoDelCliente varchar(50),
+NombreDelCliente varchar(100),
+MontoDePago decimal(10, 2),
+MontoDeCambio decimal(10, 2),
+MontoTotal decimal(10, 2),
+FechaDeRegistro datetime default getdate()
+)
+
+GO
+
+create table DETALLE_VENTA(
+IdDetalleDeLaVenta int primary key identity,
+Idventa int references VENTA(IdVenta),
+IdProducto int references PRODUCTO(IdProducto),
+PrecioDeVenta decimal(10, 2),
+Cantidad int,
+SubTotal decimal(10, 2),
+FechaDeRegistro datetime default getdate()
+)
+
+GO
+
+create table NEGOCIO(
+IdNegocio int primary key,
+Nombre varchar(60),
+RUC varchar(60),
+Direccion varchar(60),
+Logo varbinary(max) null
+)
+GO
+
+/*CREACION DE PROCEDIMIENTOS ALMACENADOS(Proceduras) */
+
+/* Procedimientos para Usuario */
+
+-- registrar usuario
+CREATE PROC SP_REGISTRAR_USUARIO(
+@Documento varchar(50),
+@NombreCompleto varchar(100),
+@Correo varchar(100),
+@Contraseña varchar(100),
+@IdRol int,
+@Estado bit,
+@IdUsuarioResultado int output,
+@Mensaje varchar(500) output
+)
+as
+begin
+    set @IdUsuarioResultado = 0
+    set @Mensaje = ''
+    
+    if not exists(select * from USUARIO where Documento = @Documento)
+    begin
+        insert into usuario(Documento,NombreCompleto,Correo,Contraseña,IdRol,Estado) values 
+		(@Documento,@NombreCompleto,@Correo,@Contraseña,@IdRol,@Estado)
+        set @IdUsuarioResultado = SCOPE_IDENTITY()
+    end
+    else 
+        set @Mensaje = 'No se puede repetir el documento para m s de un usuario'
+end
+
+GO
+
+-- editar usuario
+create PROC SP_EDITAR_USUARIO(
+@IdUsuario int,
+@Documento varchar(50),
+@NombreCompleto varchar(100),
+@Correo varchar(100),
+@Contraseña varchar(100),
+@IdRol int,
+@Estado bit,
+@Respuesta bit output,
+@Mensaje varchar(500) output
+)
+as
+begin
+	set @Respuesta = 0
+	set @Mensaje = ''
+
+	if not exists(select * from USUARIO where Documento = @Documento and idusuario != @IdUsuario)
+	begin
+		update usuario set 
+		Documento = @Documento,
+		NombreCompleto = @NombreCompleto,
+		Correo = @Correo,
+		Contraseña = @Contraseña,
+		IdRol = @IdRol,
+		Estado = @Estado
+		where IdUsuario = @IdUsuario
+
+		set @Respuesta = 1
+	end 
+	else 
+		set @Mensaje = 'No se puede repetir el documento para m s de un usuario'
+end
+
+GO
+
+-- eliminar usuario
+create PROC SP_ELIMINAR_USUARIO(
+@IdUsuario int,
+@Respuesta bit output,
+@Mensaje varchar(500) output
+)
+as
+begin
+    set @Respuesta = 0
+    set @Mensaje = ''
+    declare @validacion bit = 1
+
+    If EXISTS (SELECT * FROM COMPRA c 
+	inner join Usuario u on u.IdUsuario = c.IdUsuario
+	where u.IdUsuario = @IdUsuario
+	)
+    begin
+        set @validacion = 0
+		set @Respuesta = 0
+        set @Mensaje += 'No se puede eliminar este usuario porque esta relacionado a una compra en el sistema.\n'
+    end
+
+    If EXISTS (SELECT * FROM VENTA v 
+	inner join Usuario u on u.IdUsuario = v.IdUsuario
+	where u.IdUsuario = @IdUsuario
+	)
+    begin
+        set @validacion = 0
+		set @Respuesta = 0
+        set @Mensaje += 'No se puede eliminar este usuario porque esta relacionado a una venta en el sistema.\n'
+    end
+
+    if(@validacion = 1)
+    begin 
+        delete from USUARIO where IdUsuario = @IdUsuario 
+        set @Respuesta = 1 
+    end 
+end
+
+GO
+
+/* Procedimientos para Categoria */
+
+-- registrar categoria
+create proc SP_REGISTRAR_CATEGORIA(
+@Descripcion varchar(50),
+@Estado bit,
+@Resultado int output,
+@Mensaje varchar(500) output
+)
+as
+begin
+	set @Resultado = 0
+	if not exists (select * from CATEGORIA where Descripcion = @Descripcion)
+	begin
+		insert into CATEGORIA(Descripcion,Estado) values(@Descripcion,@Estado)
+		set @Resultado = SCOPE_IDENTITY()
+	end
+	else
+	begin
+		set @Mensaje = 'No se puede poner la misma descripcion en otra categoria'
+	end
+end
+
+GO
+
+-- Editar categoria
+create proc SP_EDITAR_CATEGORIA(
+@IdCategoria int,
+@Descripcion varchar(50),
+@Estado bit,
+@Resultado bit output,
+@Mensaje varchar(500) output
+)
+as
+begin
+	set @Resultado = 1
+	if not exists (select * from CATEGORIA where Descripcion = @Descripcion and IdCategoria != @IdCategoria)
+	begin
+		update CATEGORIA set
+		Descripcion = @Descripcion,
+		Estado = @Estado
+		where IdCategoria = @IdCategoria
+	end
+	else
+	begin
+		set @Resultado = 0
+		set @Mensaje = 'No se puede poner la misma descripcion en otra categoria'
+	end
+end
+
+GO
+
+-- Eliminar una categoria
+Create proc SP_ELIMINAR_CATEGORIA(
+@IdCategoria int,
+@Resultado bit output,
+@Mensaje varchar(500) output
+)
+as
+begin
+	set @Resultado = 1
+	-- si no existe alguna relacion entre la categoria y un producto procede a eliminarla
+	if not exists (
+	select * from CATEGORIA c
+	inner join PRODUCTO p on p.IdCategoria = c.IdCategoria
+	where c.IdCategoria = @IdCategoria
+	)
+	begin
+	-- top(1) nos sirve para eliminar solo una fila o columna en nuestra tabla
+		delete top(1) from CATEGORIA where IdCategoria = @IdCategoria
+	end
+	else
+	begin
+		set @Resultado = 0
+		set @Mensaje = 'Esta categoria ya se encuentra relacionada a un producto'
+	end
+end
+
+GO
+
+/* Procedimientos para Producto */
+
+-- Registrar producto
+Create proc SP_REGISTRAR_PRODUCTO(
+@Codigo varchar(20),
+@Nombre varchar(30),
+@Descripcion varchar(30),
+@IdCategoria int,
+@Estado bit,
+@Resultado int output,
+@Mensaje varchar(500) output
+)
+as
+begin
+	set @Resultado = 0
+	if not exists (select * from PRODUCTO where Codigo = @Codigo)
+	begin
+		insert into PRODUCTO(Codigo,Nombre,Descripcion,IdCategoria,Estado) values (@Codigo,@Nombre,@Descripcion,@IdCategoria,@Estado)
+		set @Resultado = SCOPE_IDENTITY()
+	end
+	else
+		set @Mensaje = 'Ya existe un producto con el mismo c digo, ingrese otro c digo diferente'
+end
+
+GO
+
+-- Editar un producto
+create proc SP_EDITAR_PRODUCTO(
+@IdProducto int,
+@Codigo varchar(20),
+@Nombre varchar(30),
+@Descripcion varchar(30),
+@IdCategoria int,
+@Estado bit,
+@Resultado bit output,
+@Mensaje varchar(500) output
+)
+as
+begin
+	set @Resultado = 1
+	if not exists (select * from PRODUCTO where Codigo = @Codigo and IdProducto != @IdProducto)
+		update PRODUCTO set
+		Codigo = @Codigo,
+		Nombre = @Nombre,
+		Descripcion = @Descripcion,
+		IdCategoria = @IdCategoria,
+		Estado = @Estado
+		where IdProducto = @IdProducto
+	else
+	begin
+		set @Resultado = 0
+		set @Mensaje = 'Ya existe un producto con el mismo c digo, ingrese otro c digo diferente'
+	end
+end
+
+GO
+
+-- Eliminar un producto
+create proc SP_ELIMINAR_PRODUCTO(
+@IdProducto int,
+@Respuesta bit output,
+@Mensaje varchar(500) output
+)
+as
+begin
+	set @Respuesta = 0
+	set @Mensaje = ''
+	declare @Validacion bit = 1
+	if exists (select * from DETALLE_COMPRA dc
+	inner join PRODUCTO p on p.IdProducto = dc.IdProducto
+	where p.IdProducto = @IdProducto
+	)
+	begin
+		set @Validacion = 0
+		set @Respuesta = 0
+		set @Mensaje += 'Este producto no se puede eliminar porque se encuentra relacionado a una compra.\n'
+	end
+	if exists (select * from DETALLE_VENTA dv
+	inner join PRODUCTO p on p.IdProducto = dv.IdProducto
+	where p.IdProducto = @IdProducto
+	)
+	begin
+		set @Validacion = 0
+		set @Respuesta = 0
+		set @Mensaje += 'Este producto no se puede eliminar porque se encuentra relacionado a una venta.\n'
+	end
+	if (@Validacion = 1)
+	begin
+		delete from PRODUCTO where IdProducto = @IdProducto
+		set @Respuesta = 1
+	end
+end
+
+GO
+
+/* Procedimientos para Cliente */
+
+-- Registrar cliente
+create proc SP_REGISTRAR_CLIENTE(
+@Documento varchar(50),
+@NombreCompleto varchar(50),
+@Correo varchar(50),
+@Telefono varchar(50),
+@Estado bit,
+@Resultado int output,
+@Mensaje varchar(500) output
+)
+as
+begin
+	set @Resultado = 0
+	if not exists (select * from CLIENTE where Documento = @Documento)
+	begin
+		insert into CLIENTE(Documento,NombreCompleto,Correo,Telefono,Estado) values (@Documento,@NombreCompleto,@Correo,@Telefono,@Estado)
+		set @Resultado = SCOPE_IDENTITY()
+	end
+	else
+		set @Mensaje = 'No puedes repetir el numero de documento en otro cliente'
+end
+
+GO
+
+-- Editar cliente
+create proc SP_EDITAR_CLIENTE(
+@IdCliente int,
+@Documento varchar(50),
+@NombreCompleto varchar(50),
+@Correo varchar(50),
+@Telefono varchar(50),
+@Estado bit,
+@Resultado int output,
+@Mensaje varchar(500) output
+)
+as
+begin
+	set @Resultado = 1
+	if not exists (select * from CLIENTE where Documento = @Documento and IdCliente != @IdCliente)
+	begin
+		update CLIENTE set
+		Documento = @Documento,
+		NombreCompleto = @NombreCompleto,
+		Correo = @Correo,
+		Telefono = @Telefono,
+		Estado = @Estado
+		where IdCliente = @IdCliente
+	end
+	else
+	begin
+		set @Resultado = 0
+		set @Mensaje = 'No puedes repetir el numero de documento en otro cliente'
+	end
+end
+
+GO
+
+/* Procedimientos para Proveedor */
+
+-- Registrar proveedor
+create proc SP_REGISTRAR_PROVEEDOR(
+@Documento varchar(50),
+@RazonSocial varchar(50),
+@Correo varchar(50),
+@Telefono varchar(50),
+@Estado bit,
+@Resultado int output,
+@Mensaje varchar(500) output
+)
+as
+begin
+	set @Resultado = 0
+	declare @IdPersona int
+	if not exists (select * from PROVEEDOR where Documento = @Documento)
+	begin
+		insert into PROVEEDOR(Documento,RazonSocial,Correo,Telefono,Estado) values (@Documento,@RazonSocial,@Correo,@Telefono,@Estado)
+		set @Resultado = SCOPE_IDENTITY()
+	end
+	else
+		set @Mensaje = 'No puedes repetir el numero de documento en otro proveedor'
+end
+
+GO
+
+-- Editar proveedor
+Create proc SP_EDITAR_PROVEEDOR(
+@IdProveedor int,
+@Documento varchar(50),
+@RazonSocial varchar(50),
+@Correo varchar(50),
+@Telefono varchar(50),
+@Estado bit,
+@Resultado int output,
+@Mensaje varchar(500) output
+)
+as
+begin
+	set @Resultado = 1
+	declare @IdPersona int
+	if not exists (select * from PROVEEDOR where Documento = @Documento and IdProveedor != @IdProveedor)
+	begin
+		update PROVEEDOR set
+		Documento = @Documento,
+		RazonSocial = @RazonSocial,
+		Correo = @Correo,
+		Telefono = @Telefono,
+		Estado = @Estado
+		where IdProveedor = @IdProveedor
+	end
+	else
+	begin
+		set @Resultado = 0
+		set @Mensaje = 'No puedes repetir el numero de documento en otro proveedor'
+	end
+end
+
+GO
+
+-- Eliminar proveedor
+Create proc SP_ELIMINAR_PROVEEDOR(
+@IdProveedor int,
+@Resultado bit output,
+@Mensaje varchar(500) output
+)
+as
+begin
+	set @Resultado = 1
+	if not exists (select * from PROVEEDOR p
+	inner join COMPRA c on p.IdProveedor = c.IdProveedor
+	where p.IdProveedor = @IdProveedor
+	)
+	begin
+		delete top(1) from PROVEEDOR where IdProveedor = @IdProveedor
+	end
+	else
+	begin
+		set @Resultado = 0
+		set @Mensaje += 'Este proveedor no se puede eliminar porque se encuentra relacionado a una compra.\n'
+	end
+end
+
+GO
+
+/* Procedimientos para registrar una compra */
+
+--Este proceso se puede implementar de manera de array en C#
+Create type [dbo].[EDetalle_Compra] as table (
+	[IdProducto] int null,
+	[PrecioDeCompra] decimal(18,2) null,
+	[PrecioDeVenta] decimal(18,2) null,
+	[Cantidad] int null,
+	[MontoTotal] decimal(18,2) null
+)
+
+GO
+
+-- Registrar compra
+Create procedure SP_REGISTRAR_COMPRA(
+@IdUsuario int,
+@IdProveedor int,
+@TipoDeDocumento varchar(500),
+@NumeroDeDocumento varchar(500),
+@MontoTotal decimal(18,2),
+@DetalleDeLaCompra [EDetalle_Compra] readonly, -- readonly nos sirve para solamente leer un data table
+@Resultado bit output,
+@Mensaje varchar(500) output
+)
+as
+begin
+	begin try
+		declare @IdCompra int = 0
+		set @Resultado = 1
+		set @Mensaje = ''
+
+		/*Begin transaction y commit transaction nos sirven para crear un registro
+		temporal en nuestro procedimiento y si en algun punto de la lectura y el registro
+		nos da un error entonces deshace todo lo que ya registro y proceso y lo elimina del procedimiento,
+		para manejar esta excepcion podemos ponerla dentro de un try catch, dentro del catch ponemos rollback
+		para que no devuelva nada la transaccion, en caso de que la transaccion sea correcta, ese proceso se almacena
+		permanentemente en nuestra base de datos y no lo elimina*/
+
+		begin transaction registro
+
+			insert into COMPRA(IdUsuario,IdProveedor,TipoDeDocumento,NumeroDeDocumento,MontoTotal)
+			values (@IdUsuario,@IdProveedor,@TipoDeDocumento,@NumeroDeDocumento,@MontoTotal)
+
+			set @IdCompra = SCOPE_IDENTITY()
+
+			insert into DETALLE_COMPRA(IdCompra,IdProducto,PrecioDeCompra,PrecioDeVenta,Cantidad,MontoTotal)
+			select @IdCompra,IdProducto,PrecioDeCompra,PrecioDeVenta,Cantidad,MontoTotal from @DetalleDeLaCompra
+
+			update p set p.Stock += dc.Cantidad,
+			p.PrecioDeCompra = dc.PrecioDeCompra,
+			PrecioDeVenta = dc.PrecioDeVenta
+			from PRODUCTO p
+			inner join @DetalleDeLaCompra dc on dc.IdProducto = p.IdProducto
+
+		commit transaction registro
+	end try
+	begin catch
+		set @Resultado = 0
+		set @Mensaje = ERROR_MESSAGE()
+		rollback transaction registro
+	end catch
+end
+
+GO
+
+/* Procedimientos para registrar una venta */
+
+create type [dbo].[EDetalle_Venta] as table (
+	[IdProducto] int null,
+	[PrecioDeVenta] decimal(18,2) null,
+	[Cantidad] int null,
+	[SubTotal] decimal(18,2) null
+)
+
+GO
+
+-- Registrar venta
+Create procedure SP_REGISTRAR_VENTA(
+@IdUsuario int,
+@TipoDeDocumento varchar(500),
+@NumeroDeDocumento varchar(500),
+@DocumentoDelCliente varchar(500),
+@NombreDelCliente varchar(500),
+@MontoDePago decimal(18,2),
+@MontoDeCambio decimal (18,2),
+@MontoTotal decimal(18,2),
+@DetalleDeLaVenta [EDetalle_Venta] readonly, -- readonly nos sirve para solamente leer un data table
+@Resultado bit output,
+@Mensaje varchar(500) output
+)
+as
+begin
+	begin try
+		declare @IdVenta int = 0
+		set @Resultado = 1
+		set @Mensaje = ''
+
+		/*Begin transaction y commit transaction nos sirven para crear un registro
+		temporal en nuestro procedimiento y si en algun punto de la lectura y el registro
+		nos da un error entonces deshace todo lo que ya registro y proceso y lo elimina del procedimiento,
+		para manejar esta excepcion podemos ponerla dentro de un try catch, dentro del catch ponemos rollback
+		para que no devuelva nada la transaccion, en caso de que la transaccion sea correcta, ese proceso se almacena
+		permanentemente en nuestra base de datos y no lo elimina*/
+
+		begin transaction registro
+
+			insert into VENTA(IdUsuario,TipoDeDocumento,NumeroDeDocumento,DocumentoDelCliente,NombreDelCliente,MontoDePago,MontoDeCambio,MontoTotal)
+			values (@IdUsuario,@TipoDeDocumento,@NumeroDeDocumento,@DocumentoDelCliente,@NombreDelCliente,@MontoDePago,@MontoDeCambio,@MontoTotal)
+
+			-- Scope_Identity nos devuelve el ultimo id generado en la tabla
+			set @IdVenta = SCOPE_IDENTITY()
+
+			insert into DETALLE_VENTA(IdVenta,IdProducto,PrecioDeVenta,Cantidad,SubTotal)
+			select @IdVenta,IdProducto,PrecioDeVenta,Cantidad,SubTotal from @DetalleDeLaVenta
+
+		commit transaction registro
+	end try
+	begin catch
+		set @Resultado = 0
+		set @Mensaje = ERROR_MESSAGE()
+		rollback transaction registro
+	end catch
+end
+
+GO
+
+/* Procedimiento para reportar una compra */
+
+create proc SP_REPORTE_DE_COMPRAS(
+@FechaDeInicio varchar(10),
+@FechaDeFin varchar(10),
+@IdProveedor int
+)
+as
+begin
+	-- dateformat nos sirve para darle un formato a la fecha
+	SET DATEFORMAT dmy;
+	select  
+	CONVERT(char(10),c.FechaDeRegistro,103)[FechaDeRegistro],c.TipoDeDocumento,c.NumeroDeDocumento,c.MontoTotal,
+	u.NombreCompleto[TipoDeUsuarioRegistrado],pr.Documento[DocumentoDelProveedor],pr.RazonSocial,
+	p.Codigo[CodigoDelProducto],p.Nombre[NombreDelProducto],ca.Descripcion[Categoria],dc.PrecioDeCompra,dc.PrecioDeVenta,dc.Cantidad,
+	dc.MontoTotal[SubTotal]
+	from COMPRA c
+	inner join USUARIO u on u.IdUsuario = c.IdUsuario
+	inner join PROVEEDOR pr on pr.IdProveedor = c.IdProveedor
+	inner join DETALLE_COMPRA dc on dc.IdCompra = c.IdCompra
+	inner join PRODUCTO p on p.IdProducto = dc.IdProducto
+	inner join CATEGORIA ca on ca.IdCategoria = p.IdCategoria
+	-- Con este metodo brindamos un rango de fechas en sql
+	where CONVERT(date, c.FechaDeRegistro) between @FechaDeInicio and @FechaDeFin
+	-- iif es una condicional en sql, primero le damos la condicion que puede cumplir
+	-- en este caso si el id del proveedor es 0 entonces procede a revisar los IdProveedor que hay en la tabla de los proveedores
+	-- y si no, leera el proveedor que le pasemos a la procedura
+	and pr.IdProveedor = iif(@IdProveedor = 0,pr.IdProveedor,@IdProveedor)
+end
+
+GO
+
+/* Procedimiento para reportar una venta */
+
+create proc SP_REPORTE_DE_VENTAS(
+@FechaDeInicio varchar(10),
+@FechaDeFin varchar(10)
+)
+as
+begin
+	-- dateformat nos sirve para darle un formato a la fecha
+	SET DATEFORMAT dmy;
+	select  
+	CONVERT(char(10),v.FechaDeRegistro,103)[FechaDeRegistro],v.TipoDeDocumento,v.NumeroDeDocumento,v.MontoTotal,
+	u.NombreCompleto[TipoDeUsuarioRegistrado],
+	v.DocumentoDelCliente,v.NombreDelCliente,
+	p.Codigo[CodigoDelProducto],p.Nombre[NombreDelProducto],ca.Descripcion[Categoria],dv.PrecioDeVenta,dv.Cantidad,
+	dv.SubTotal
+	from VENTA v
+	inner join USUARIO u on u.IdUsuario = v.IdUsuario
+	inner join DETALLE_VENTA dv on dv.Idventa = v.Idventa
+	inner join PRODUCTO p on p.IdProducto = dv.IdProducto
+	inner join CATEGORIA ca on ca.IdCategoria = p.IdCategoria
+	-- Con este metodo brindamos un rango de fechas en sql
+	where CONVERT(date, v.FechaDeRegistro) between @FechaDeInicio and @FechaDeFin
+end
+
+/*INSERTAMOS REGISTROS A LAS TABLAS */
+
+GO
+
+insert into ROL (Descripcion)
+values('ADMINISTRADOR')
+
+GO
+
+insert into ROL (Descripcion)
+values('EMPLEADO')
+
+GO
+
+insert into USUARIO(Documento,NombreCompleto,Correo,Contraseña,IdRol,Estado)
+values ('331214','Luis Lima','luis@gmail.com','123',1,1)
+
+GO
+
+insert into USUARIO(Documento,NombreCompleto,Correo,Contraseña,IdRol,Estado)
+values ('558201','Angelica Mejia','angelica@gmail.com','321',2,1)
+
+GO
+
+insert into PERMISO(IdRol,NombreDeMenu) values
+  (1,'menuUsuario'),
+  (1,'menuMantenedor'),
+  (1,'menuVentas'),
+  (1,'menuCompras'),
+  (1,'menuClientes'),
+  (1,'menuProveedores'),
+  (1,'menuReportes'),
+  (1,'menuEnvioDeCorreo')
+
+GO
+
+insert into PERMISO(IdRol,NombreDeMenu) values
+  (2,'menuVentas'),
+  (2,'menuCompras'),
+  (2,'menuClientes'),
+  (2,'menuProveedores')
+
+GO
+
+insert into NEGOCIO(IdNegocio,Nombre,RUC,Direccion,Logo) values
+  (1,'Tienda LuiGelica','407080','Jalapa',null)

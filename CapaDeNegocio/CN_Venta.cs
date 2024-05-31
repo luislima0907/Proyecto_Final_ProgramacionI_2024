@@ -11,7 +11,8 @@ namespace CapaDeNegocio
 {
     public class CN_Venta
     {
-        // instanciamos CD_Venta en la capa de Negocio
+        // instanciamos CD_Venta en la capa de Negocio para acceder a los metodos que contienen las consultas
+        // en sql server
         private CD_Venta objcd_Venta = new CD_Venta();
 
         public int ObtenerCorrelativo()
@@ -20,7 +21,7 @@ namespace CapaDeNegocio
             return objcd_Venta.ObtenerCorrelativo();
         }
 
-        // creamos y llamamos a los metodos de registrar, editar y eliminar Venta
+        // creamos y llamamos a los metodos de Registrar, RestarStock, SumarStock y ObtenerVenta de la venta
         public bool RegistrarVenta(Venta objVenta, DataTable DetalleVenta, out string Mensaje)
         {
             // devolvemos el metodo de listar la tabla de Ventas

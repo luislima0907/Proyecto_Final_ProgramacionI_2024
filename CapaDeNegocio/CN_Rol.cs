@@ -10,7 +10,8 @@ namespace CapaDeNegocio
 {
     public class CN_Rol
     {
-        // instanciamos CD_Rol en la capa de Negocio
+        // instanciamos CD_Rol en la capa de Negocio para acceder a los metodos que contienen las consultas
+        // en sql server
         private CD_Rol objcd_rol = new CD_Rol();
 
         // el metodo para listar la tabla de rol

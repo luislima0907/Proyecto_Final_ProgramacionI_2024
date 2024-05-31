@@ -23,9 +23,10 @@ namespace CapaDePresentacion
 
         private void FormCategoria_Load(object sender, EventArgs e)
         {
-            // Cuando el estado del Categoria devuelva true, se dira que esta activo
+            // Cuando el estado de la Categoria devuelva true, se dira que esta activa
             cboEstado.Items.Add(new OpcionCombo() { Valor = 1, Texto = "Activo" });
-            // Cuando el estado del Categoria devuelva false, se dira que no esta activo
+
+            // Cuando el estado de la Categoria devuelva false, se dira que no esta activa
             cboEstado.Items.Add(new OpcionCombo() { Valor = 0, Texto = "No Activo" });
 
             // Con esto decimos que solo nos devuelva el texto almacenado en el objeto de la OpcionCombo en nuestro formulario de Categorias
@@ -74,10 +75,10 @@ namespace CapaDePresentacion
 
             if (objCategoria.IdCategoria == 0)
             {
-                // de esta manera generamos el id del nuevo Categoria
+                // de esta manera generamos el id de la nueva Categoria
                 int idCategoriaGenerado = new CN_Categoria().RegistrarCategoria(objCategoria, out mensaje);
 
-                // Como el id del nuevo Categoria no puede ser 0 entonces se hace esta validacion
+                // Como el id de la nueva Categoria no puede ser 0 entonces se hace esta validacion
                 if (idCategoriaGenerado != 0)
                 {
                     dgvData.Rows.Add(new object[] {"",idCategoriaGenerado,txtDescripcion.Text,
@@ -86,7 +87,7 @@ namespace CapaDePresentacion
                 ((OpcionCombo)cboEstado.SelectedItem).Texto.ToString()
                 });
 
-                    // al momento de agregar un Categoria, que limpie los campos de texto que usamos anteriormente
+                    // al momento de agregar una Categoria, que limpie los campos de texto que usamos anteriormente
                     LimpiarCamposDeTexto();
                 }
                 else MessageBox.Show(mensaje);
@@ -99,6 +100,7 @@ namespace CapaDePresentacion
                 {
                     // Obtenemos el indice de la fila seleccionada en nuestro formulario de Categorias
                     DataGridViewRow row = dgvData.Rows[Convert.ToInt32(txtIndice.Text)];
+
                     // Obtenemos los demas datos de la fila seleccionada
                     row.Cells["Id"].Value = txtId.Text;
                     row.Cells["Descripcion"].Value = txtDescripcion.Text;
@@ -133,7 +135,7 @@ namespace CapaDePresentacion
             {
                 e.Paint(e.CellBounds, DataGridViewPaintParts.All);
 
-                // variables con las dimensiones del icono que acompañara a la fila con la información del Categoria.
+                // variables con las dimensiones del icono que acompañara a la fila con la información de la Categoria.
                 var ancho = Properties.Resources.check20.Width;
                 var alto = Properties.Resources.check20.Height;
                 var posicionEnX = e.CellBounds.Left + (e.CellBounds.Width - ancho) / 2;
@@ -149,7 +151,7 @@ namespace CapaDePresentacion
 
         private void dgvData_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            // Se activa cuando hacemos click en el boton que contiene el icono para seleccionar un Categoria
+            // Se activa cuando hacemos click en el boton que contiene el icono para seleccionar una Categoria
             if (dgvData.Columns[e.ColumnIndex].Name == "btnSeleccionar")
             {
                 int indice = e.RowIndex;
@@ -189,7 +191,7 @@ namespace CapaDePresentacion
 
                     bool respuesta = new CN_Categoria().EliminarCategoria(objCategoria, out mensaje);
 
-                    // Eliminamos a un Categoria por medio del indice de la fila seleccionada
+                    // Eliminamos a una Categoria por medio del indice de la fila seleccionada
                     if (respuesta)
                     {
                         dgvData.Rows.RemoveAt(Convert.ToInt32(txtIndice.Text));
@@ -286,7 +288,7 @@ namespace CapaDePresentacion
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("Error al generar con el registro de las categorias", "Mensaje", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        MessageBox.Show("Error al generar el registro de las categorias", "Mensaje", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     }
                 }
             }

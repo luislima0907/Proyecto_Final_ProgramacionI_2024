@@ -9,33 +9,39 @@ using System.Threading.Tasks;
 
 namespace CapaDeDatos
 {
+    // Esta clase manejará todas las consultas en nuestra base de datos relacionadas a la tabla de Proveedor
     public class CD_Proveedor
     {
+        // Creamos un método para listar a los proveedores
         public List<Proveedor> Listar()
         {
+            // Creamos una lista de proveedores
             List<Proveedor> lista = new List<Proveedor>();
+
+            // Utilizamos la cadena de conexión para acceder a nuestra base de datos
             using (SqlConnection oConexion = new SqlConnection(Conexion.cadena))
             {
+                // Hacemos un try catch para manejar los errores al momento de conectar la base de datos
                 try
                 {
                     // Instanciamos StringBuilder, ya que nos permite hacer consultas con saltos de linea en sql
                     StringBuilder query = new StringBuilder();
                     query.AppendLine("select IdProveedor,Documento,RazonSocial,Correo,Telefono,Estado from PROVEEDOR\r\n");
 
-                    // instanciamos la seleccion de la tabla con el query y la conexion a nuestra base de datos
+                    // instanciamos SqlCommand para realizar la seleccion de la tabla con la query y la conexión a nuestra base de datos
                     SqlCommand cmd = new SqlCommand(query.ToString(), oConexion);
                     
-                    // aqui le estamos diciendo que el tipo de comando que ejecutara sera un texto
+                    // aqui le estamos diciendo que el tipo de comando que ejecutara sera de tipo texto
                     cmd.CommandType = CommandType.Text;
                     oConexion.Open();
 
                     // hacemos que pueda leer nuestro comando y ejecutarlo
                     using (SqlDataReader dr = cmd.ExecuteReader())
                     {
-                        // mientras pueda leer la seleccion que hicimos hacia la tabla de Proveedors
+                        // mientras pueda leer la seleccion que hicimos hacia la tabla de Proveedor
                         while (dr.Read())
                         {
-                            // que pueda crear una lista que contenga los Proveedors de la tabla
+                            // que pueda crear una lista que contenga los Proveedores de la tabla
                             lista.Add(new Proveedor()
                             {
                                 // aqui convertimos el tipo de valor que contendra cada dato de nuestra tabla, tenemos que definirlo igual que cuando lo declaramos en sql
@@ -58,7 +64,7 @@ namespace CapaDeDatos
             return lista;
         }
 
-        // Creamos un metodo para registrar los Proveedors y almacenarlos en nuestra base de datos
+        // Creamos un método para registrar a los Proveedores y almacenarlos en nuestra base de datos
         public int RegistrarProveedor(Proveedor objProveedor, out string Mensaje)
         {
             int idProveedorGenerado = 0;
@@ -79,17 +85,20 @@ namespace CapaDeDatos
                     // Para los datos de salida tenemos que darle el nombre del parametro en sql y despues definir de que tipo es, asi mismo le especificamos por medio de direction el tipo de dato que es, si es de entrada o salida
                     cmd.Parameters.Add("Resultado", SqlDbType.Int).Direction = ParameterDirection.Output;
                     cmd.Parameters.Add("Mensaje", SqlDbType.VarChar, 500).Direction = ParameterDirection.Output;
+                    
+                    // Le decimos que el tipo de comando sera una procedura
                     cmd.CommandType = CommandType.StoredProcedure;
 
                     oConexion.Open();
 
                     cmd.ExecuteNonQuery();
 
+                    // almacenamos el id del proveedor en el resultado de la procedura
                     idProveedorGenerado = Convert.ToInt32(cmd.Parameters["Resultado"].Value);
                     Mensaje = cmd.Parameters["Mensaje"].Value.ToString();
                 }
             }
-            // Si causa algun fallo a la hora de registrar, que nos muestre el error de la excepcion por medio de un mensaje
+            // Si causa algún fallo a la hora de registrar, que nos muestre el error de la excepción por medio de un mensaje
             catch (Exception ex)
             {
                 idProveedorGenerado = 0;
@@ -98,7 +107,7 @@ namespace CapaDeDatos
             return idProveedorGenerado;
         }
 
-        // Creamos un metodo para editar a los Proveedors en nuestra base de datos
+        // Creamos un método para editar a los Proveedores en nuestra base de datos
         public bool EditarProveedor(Proveedor objProveedor, out string Mensaje)
         {
             bool respuesta = false;
@@ -108,7 +117,7 @@ namespace CapaDeDatos
             {
                 using (SqlConnection oConexion = new SqlConnection(Conexion.cadena))
                 {
-                    // Por medio de los parametros con valores hacemos posible el registro de los Proveedors
+                    // Por medio de los parametros con valores hacemos posible la edición de los Proveedors
                     SqlCommand cmd = new SqlCommand("SP_EDITAR_PROVEEDOR", oConexion);
                     cmd.Parameters.AddWithValue("IdProveedor", objProveedor.IdProveedor);
                     cmd.Parameters.AddWithValue("Documento", objProveedor.Documento);
@@ -130,7 +139,7 @@ namespace CapaDeDatos
                     Mensaje = cmd.Parameters["Mensaje"].Value.ToString();
                 }
             }
-            // Si causa algun fallo a la hora de editar, que nos muestre el error de la excepcion por medio de un mensaje
+            // Si causa algún fallo a la hora de editar, que nos muestre el error de la excepción por medio de un mensaje
             catch (Exception ex)
             {
                 respuesta = false;
@@ -139,7 +148,7 @@ namespace CapaDeDatos
             return respuesta;
         }
 
-        // Creamos un metodo para editar a los Proveedors en nuestra base de datos
+        // Creamos un método para eliminar a los Proveedores en nuestra base de datos
         public bool EliminarProveedor(Proveedor objProveedor, out string Mensaje)
         {
             bool respuesta = false;
@@ -149,11 +158,11 @@ namespace CapaDeDatos
             {
                 using (SqlConnection oConexion = new SqlConnection(Conexion.cadena))
                 {
-                    // Por medio de los parametros con valores hacemos posible el registro de los Proveedors
+                    // Por medio de los parámetros con valores hacemos posible la eliminación de los Proveedores
                     SqlCommand cmd = new SqlCommand("SP_ELIMINAR_PROVEEDOR", oConexion);
                     cmd.Parameters.AddWithValue("IdProveedor", objProveedor.IdProveedor);
 
-                    // Para los datos de salida tenemos que darle el nombre del parametro en sql y despues definir de que tipo es, asi mismo le especificamos por medio de direction el tipo de dato que es, si es de entrada o salida
+                    // Para los datos de salida tenemos que darle el nombre del parámetro en sql y despues definir de que tipo es, asi mismo le especificamos por medio de direction el tipo de dato que es, si es de entrada o salida
                     cmd.Parameters.Add("Resultado", SqlDbType.Int).Direction = ParameterDirection.Output;
                     cmd.Parameters.Add("Mensaje", SqlDbType.VarChar, 500).Direction = ParameterDirection.Output;
                     cmd.CommandType = CommandType.StoredProcedure;
@@ -166,7 +175,7 @@ namespace CapaDeDatos
                     Mensaje = cmd.Parameters["Mensaje"].Value.ToString();
                 }
             }
-            // Si causa algun fallo a la hora de editar, que nos muestre el error de la excepcion por medio de un mensaje
+            // Si causa algún fallo a la hora de eliminar, que nos muestre el error de la excepción por medio de un mensaje
             catch (Exception ex)
             {
                 respuesta = false;

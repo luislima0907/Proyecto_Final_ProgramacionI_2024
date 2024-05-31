@@ -46,7 +46,7 @@
             this.menuReportes = new FontAwesome.Sharp.IconMenuItem();
             this.subMenuReporteDeCompras = new System.Windows.Forms.ToolStripMenuItem();
             this.subMenuReporteDeVentas = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuAcercaDe = new FontAwesome.Sharp.IconMenuItem();
+            this.menuEnvioDeCorreo = new FontAwesome.Sharp.IconMenuItem();
             this.menuTitulo = new System.Windows.Forms.MenuStrip();
             this.label1 = new System.Windows.Forms.Label();
             this.contenedor = new System.Windows.Forms.Panel();
@@ -69,10 +69,10 @@
             this.menuClientes,
             this.menuProveedores,
             this.menuReportes,
-            this.menuAcercaDe});
+            this.menuEnvioDeCorreo});
             this.menu.Location = new System.Drawing.Point(0, 140);
             this.menu.Name = "menu";
-            this.menu.Size = new System.Drawing.Size(1893, 116);
+            this.menu.Size = new System.Drawing.Size(2023, 112);
             this.menu.TabIndex = 0;
             this.menu.Text = "menuStrip1";
             // 
@@ -264,19 +264,19 @@
             this.subMenuReporteDeVentas.Text = "Reporte de Ventas";
             this.subMenuReporteDeVentas.Click += new System.EventHandler(this.subMenuReporteDeVentas_Click);
             // 
-            // menuAcercaDe
+            // menuEnvioDeCorreo
             // 
-            this.menuAcercaDe.Font = new System.Drawing.Font("Segoe UI", 15F);
-            this.menuAcercaDe.IconChar = FontAwesome.Sharp.IconChar.CircleInfo;
-            this.menuAcercaDe.IconColor = System.Drawing.Color.Black;
-            this.menuAcercaDe.IconFont = FontAwesome.Sharp.IconFont.Auto;
-            this.menuAcercaDe.IconSize = 50;
-            this.menuAcercaDe.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.menuAcercaDe.Name = "menuAcercaDe";
-            this.menuAcercaDe.Size = new System.Drawing.Size(216, 108);
-            this.menuAcercaDe.Text = "Acerca de";
-            this.menuAcercaDe.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            this.menuAcercaDe.Click += new System.EventHandler(this.menuAcercaDe_Click);
+            this.menuEnvioDeCorreo.Font = new System.Drawing.Font("Segoe UI", 15F);
+            this.menuEnvioDeCorreo.IconChar = FontAwesome.Sharp.IconChar.Envelope;
+            this.menuEnvioDeCorreo.IconColor = System.Drawing.Color.Black;
+            this.menuEnvioDeCorreo.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            this.menuEnvioDeCorreo.IconSize = 50;
+            this.menuEnvioDeCorreo.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.menuEnvioDeCorreo.Name = "menuEnvioDeCorreo";
+            this.menuEnvioDeCorreo.Size = new System.Drawing.Size(280, 108);
+            this.menuEnvioDeCorreo.Text = "Enviar Correo";
+            this.menuEnvioDeCorreo.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.menuEnvioDeCorreo.Click += new System.EventHandler(this.menuEnvioDeCorreos_Click);
             // 
             // menuTitulo
             // 
@@ -287,7 +287,7 @@
             this.menuTitulo.Location = new System.Drawing.Point(0, 0);
             this.menuTitulo.Name = "menuTitulo";
             this.menuTitulo.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.menuTitulo.Size = new System.Drawing.Size(1893, 140);
+            this.menuTitulo.Size = new System.Drawing.Size(2023, 140);
             this.menuTitulo.TabIndex = 1;
             this.menuTitulo.Text = "menuStrip2";
             // 
@@ -299,18 +299,18 @@
             this.label1.ForeColor = System.Drawing.Color.White;
             this.label1.Location = new System.Drawing.Point(37, 36);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(901, 63);
+            this.label1.Size = new System.Drawing.Size(975, 63);
             this.label1.TabIndex = 2;
-            this.label1.Text = "Sistema de Ventas de Tienda Rosita";
+            this.label1.Text = "Sistema de Ventas de Tienda LuiGelica";
             // 
             // contenedor
             // 
             this.contenedor.AutoSize = true;
             this.contenedor.BackColor = System.Drawing.Color.Black;
             this.contenedor.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.contenedor.Location = new System.Drawing.Point(0, 256);
+            this.contenedor.Location = new System.Drawing.Point(0, 252);
             this.contenedor.Name = "contenedor";
-            this.contenedor.Size = new System.Drawing.Size(1893, 630);
+            this.contenedor.Size = new System.Drawing.Size(2023, 634);
             this.contenedor.TabIndex = 3;
             // 
             // label2
@@ -346,7 +346,7 @@
             this.btnSalir.IconChar = FontAwesome.Sharp.IconChar.SignOutAlt;
             this.btnSalir.IconColor = System.Drawing.Color.Black;
             this.btnSalir.IconFont = FontAwesome.Sharp.IconFont.Auto;
-            this.btnSalir.Location = new System.Drawing.Point(1695, 158);
+            this.btnSalir.Location = new System.Drawing.Point(1780, 158);
             this.btnSalir.Name = "btnSalir";
             this.btnSalir.Size = new System.Drawing.Size(186, 75);
             this.btnSalir.TabIndex = 6;
@@ -359,7 +359,7 @@
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(1893, 886);
+            this.ClientSize = new System.Drawing.Size(2023, 886);
             this.Controls.Add(this.btnSalir);
             this.Controls.Add(this.lblUsuario);
             this.Controls.Add(this.label2);
@@ -384,7 +384,7 @@
         private System.Windows.Forms.MenuStrip menu;
         private System.Windows.Forms.MenuStrip menuTitulo;
         private System.Windows.Forms.Label label1;
-        private FontAwesome.Sharp.IconMenuItem menuAcercaDe;
+        private FontAwesome.Sharp.IconMenuItem menuEnvioDeCorreo;
         private FontAwesome.Sharp.IconMenuItem menuUsuario;
         private FontAwesome.Sharp.IconMenuItem menuMantenedor;
         private FontAwesome.Sharp.IconMenuItem menuVentas;

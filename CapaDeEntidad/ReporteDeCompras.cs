@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace CapaDeEntidad
 {
+    // La entidad ReporteDeCompras hará reportes de las compras realizadas en el programa
     public class ReporteDeCompras
     {
         public string FechaDeRegistro { get; set; }

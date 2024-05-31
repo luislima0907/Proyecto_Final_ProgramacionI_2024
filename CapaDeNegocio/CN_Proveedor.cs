@@ -10,12 +10,13 @@ namespace CapaDeNegocio
 {
     public class CN_Proveedor
     {
-        // instanciamos CD_Proveedor en la capa de Negocio
+        // instanciamos CD_Proveedor en la capa de Negocio para acceder a los metodos que contienen las consultas
+        // en sql server
         private CD_Proveedor objcd_Proveedor = new CD_Proveedor();
 
         public List<Proveedor> Listar()
         {
-            // devolvemos el metodo de listar la tabla de Proveedors
+            // devolvemos el metodo de listar la tabla de Proveedores
             return objcd_Proveedor.Listar();
         }
 
@@ -26,7 +27,7 @@ namespace CapaDeNegocio
             Mensaje = string.Empty;
 
             if (objProveedor.Documento == "") Mensaje += "Es necesario añadir el documento del Proveedor.\n";
-            if (objProveedor.RazonSocial == "") Mensaje += "Es necesario añadir la razon social del Proveedor.\n";
+            if (objProveedor.RazonSocial == "") Mensaje += "Es necesario añadir la razón social del Proveedor.\n";
             if (objProveedor.Correo == "") Mensaje += "Es necesario añadir un correo al Proveedor.\n";
 
             if (Mensaje != string.Empty) return 0;
@@ -39,7 +40,7 @@ namespace CapaDeNegocio
             Mensaje = string.Empty;
 
             if (objProveedor.Documento == "") Mensaje += "Es necesario añadir el documento del Proveedor.\n";
-            if (objProveedor.RazonSocial == "") Mensaje += "Es necesario añadir la razon social del Proveedor.\n";
+            if (objProveedor.RazonSocial == "") Mensaje += "Es necesario añadir la razón social del Proveedor.\n";
             if (objProveedor.Correo == "") Mensaje += "Es necesario añadir un correo al Proveedor.\n";
 
             if (Mensaje != string.Empty) return false;

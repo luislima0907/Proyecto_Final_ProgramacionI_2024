@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace CapaDeEntidad
 {
+    // La entidad Proveedor será necesaria para saber a quién le estamos comprando un producto
+    // para nuestro inventario
     public class Proveedor
     {
         public int IdProveedor { get; set; }

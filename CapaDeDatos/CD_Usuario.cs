@@ -11,22 +11,30 @@ using CapaDeEntidad;
 
 namespace CapaDeDatos
 {
+    // Esta clase manejará todas las consultas en nuestra base de datos relacionadas a la tabla de Usuario
     public class CD_Usuario
     {
+        // Creamos un método para listar a los usuarios
         public List<Usuario> Listar()
         {
+            // Creamos e instanciamos una lista de usuarios
             List<Usuario> lista = new List<Usuario>();
+
+            // Utilizamos la cadena de conexión para acceder a la base de datos
             using (SqlConnection oConexion = new SqlConnection(Conexion.cadena))
             {
+                // Hacemos un try catch para manejar los errores de la conexión
                 try
                 {
                     // Instanciamos StringBuilder, ya que nos permite hacer consultas con saltos de linea en sql
                     StringBuilder query = new StringBuilder();
                     query.AppendLine("select u.IdUsuario,u.Documento,u.NombreCompleto,u.Correo,u.Contraseña,u.Estado,r.IdRol,r.Descripcion from USUARIO u");
                     query.AppendLine("inner join rol r on r.IdRol = u.IdRol");
-                    // instanciamos la seleccion de la tabla con el query y la conexion a nuestra base de datos
+
+                    // instanciamos SqlCommand para realizar la seleccion de la tabla con el query y la conexion a nuestra base de datos
                     SqlCommand cmd = new SqlCommand(query.ToString(), oConexion);
-                    // aqui le estamos diciendo que el tipo de comando que ejecutara sera un texto
+
+                    // aqui le estamos diciendo que el tipo de comando que ejecutara sera de tipo texto
                     cmd.CommandType = CommandType.Text;
                     oConexion.Open();
 
@@ -53,14 +61,14 @@ namespace CapaDeDatos
                 }
                 catch (Exception ex)
                 {
-                    // si hay algun error a la hora de crear la lista, que la devuelva vacia
+                    // si hay algún error a la hora de crear la lista, que la devuelva vacia
                     lista = new List<Usuario>();
                 }
             }
             return lista;
         }
 
-        // Creamos un metodo para registrar los usuarios y almacenarlos en nuestra base de datos
+        // Creamos un método para registrar los usuarios y almacenarlos en nuestra base de datos
         public int RegistrarUsuario(Usuario objUsuario, out string Mensaje)
         {
             int idUsuarioGenerado = 0;
@@ -78,9 +86,12 @@ namespace CapaDeDatos
                     cmd.Parameters.AddWithValue("Contraseña", objUsuario.Contraseña);
                     cmd.Parameters.AddWithValue("IdRol", objUsuario.oRol.IdRol);
                     cmd.Parameters.AddWithValue("Estado", objUsuario.Estado);
+
                     // Para los datos de salida tenemos que darle el nombre del parametro en sql y despues definir de que tipo es, asi mismo le especificamos por medio de direction el tipo de dato que es, si es de entrada o salida
                     cmd.Parameters.Add("IdUsuarioResultado", SqlDbType.Int).Direction = ParameterDirection.Output;
                     cmd.Parameters.Add("Mensaje", SqlDbType.VarChar,500).Direction = ParameterDirection.Output;
+                    
+                    // Le decimos que el tipo de comando es una procedura
                     cmd.CommandType = CommandType.StoredProcedure;
 
                     oConexion.Open();
@@ -91,7 +102,7 @@ namespace CapaDeDatos
                     Mensaje = cmd.Parameters["Mensaje"].Value.ToString();
                 }
             }
-            // Si causa algun fallo a la hora de registrar, que nos muestre el error de la excepcion por medio de un mensaje
+            // Si causa algún fallo a la hora de registrar, que nos muestre el error de la excepción por medio de un mensaje
             catch (Exception ex)
             {
                 idUsuarioGenerado = 0;
@@ -102,7 +113,7 @@ namespace CapaDeDatos
 
         }
 
-        // Creamos un metodo para editar a los usuarios en nuestra base de datos
+        // Creamos un método para editar a los usuarios en nuestra base de datos
         public bool EditarUsuario(Usuario objUsuario, out string Mensaje)
         {
             bool respuesta = false;
@@ -121,9 +132,12 @@ namespace CapaDeDatos
                     cmd.Parameters.AddWithValue("Contraseña", objUsuario.Contraseña);
                     cmd.Parameters.AddWithValue("IdRol", objUsuario.oRol.IdRol);
                     cmd.Parameters.AddWithValue("Estado", objUsuario.Estado);
+
                     // Para los datos de salida tenemos que darle el nombre del parametro en sql y despues definir de que tipo es, asi mismo le especificamos por medio de direction el tipo de dato que es, si es de entrada o salida
                     cmd.Parameters.Add("Respuesta", SqlDbType.Int).Direction = ParameterDirection.Output;
                     cmd.Parameters.Add("Mensaje", SqlDbType.VarChar,500).Direction = ParameterDirection.Output;
+                    
+                    // Le decimos que el tipo de comando será una procedura
                     cmd.CommandType = CommandType.StoredProcedure;
 
                     oConexion.Open();
@@ -134,7 +148,7 @@ namespace CapaDeDatos
                     Mensaje = cmd.Parameters["Mensaje"].Value.ToString();
                 }
             }
-            // Si causa algun fallo a la hora de editar, que nos muestre el error de la excepcion por medio de un mensaje
+            // Si causa algún fallo a la hora de editar, que nos muestre el error de la excepción por medio de un mensaje
             catch (Exception ex)
             {
                 respuesta = false;
@@ -146,7 +160,7 @@ namespace CapaDeDatos
         }
 
 
-        // Creamos un metodo para editar a los usuarios en nuestra base de datos
+        // Creamos un método para eliminar a los usuarios en nuestra base de datos
         public bool EliminarUsuario(Usuario objUsuario, out string Mensaje)
         {
             bool respuesta = false;
@@ -159,9 +173,12 @@ namespace CapaDeDatos
                     // Por medio de los parametros con valores hacemos posible el registro de los usuarios
                     SqlCommand cmd = new SqlCommand("SP_ELIMINAR_USUARIO", oConexion);
                     cmd.Parameters.AddWithValue("IdUsuario", objUsuario.IdUsuario);
+
                     // Para los datos de salida tenemos que darle el nombre del parametro en sql y despues definir de que tipo es, asi mismo le especificamos por medio de direction el tipo de dato que es, si es de entrada o salida
                     cmd.Parameters.Add("Respuesta", SqlDbType.Int).Direction = ParameterDirection.Output;
                     cmd.Parameters.Add("Mensaje", SqlDbType.VarChar,500).Direction = ParameterDirection.Output;
+                    
+                    // Le decimos que el tipo de comando será una procedura
                     cmd.CommandType = CommandType.StoredProcedure;
 
                     oConexion.Open();
@@ -172,7 +189,7 @@ namespace CapaDeDatos
                     Mensaje = cmd.Parameters["Mensaje"].Value.ToString();
                 }
             }
-            // Si causa algun fallo a la hora de editar, que nos muestre el error de la excepcion por medio de un mensaje
+            // Si causa algún fallo a la hora de eliminar, que nos muestre el error de la excepción por medio de un mensaje
             catch (Exception ex)
             {
                 respuesta = false;

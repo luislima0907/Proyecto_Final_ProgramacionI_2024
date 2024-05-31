@@ -68,7 +68,7 @@
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(491, 88);
             this.label2.TabIndex = 1;
-            this.label2.Text = "BIENVENIDO AL SISTEMA \r\nDE TIENDA ROSITA";
+            this.label2.Text = "BIENVENIDO AL SISTEMA \r\nDE TIENDA LUIGELICA";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // txtDocumento

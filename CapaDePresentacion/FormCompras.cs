@@ -30,20 +30,17 @@ namespace CapaDePresentacion
 
         private void FormCompras_Load(object sender, EventArgs e)
         {
-            //MessageBox.Show(_Usuario.NombreCompleto);
-            //cboTipoDocumento.Items.Add();
-
             cboTipoDocumento.Items.Add(new OpcionCombo() { Valor = "Boleta", Texto = "Boleta" });
             // Cuando el estado del usuario devuelva false, se dira que no esta activo
             cboTipoDocumento.Items.Add(new OpcionCombo() { Valor = "Factura", Texto = "Factura" });
 
-            // Con esto decimos que solo nos devuelva el texto almacenado en el objeto de la OpcionCombo en nuestro formulario de usuarios
+            // Con esto decimos que solo nos devuelva el texto almacenado en el objeto de la OpcionCombo en nuestro formulario de Compras
             cboTipoDocumento.DisplayMember = "Texto";
 
-            // Con esto almacenamos el valor de true o false que nos devuelva la OpcionCombo en el formulario de usuarios
+            // Con esto almacenamos el valor de true o false que nos devuelva la OpcionCombo en el formulario de Compras
             cboTipoDocumento.ValueMember = "Valor";
 
-            // Con esto decimos que solo seleccione el primer elemento mostrado en el display del estado del formulario de usuarios.
+            // Con esto decimos que solo seleccione el primer elemento mostrado en el display del estado del formulario de Compras
             cboTipoDocumento.SelectedIndex = 0;
 
             // con esto le damos un formato a la fecha en la caja de texto de la fecha en nuestro formulario de compras
@@ -220,7 +217,7 @@ namespace CapaDePresentacion
 
         private void dgvData_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            // Se activa cuando hacemos click en el boton que contiene el icono para seleccionar un usuario
+            // Se activa cuando hacemos click en el boton que contiene el icono para seleccionar una compra
             if (dgvData.Columns[e.ColumnIndex].Name == "btnEliminar")
             {
                 int indice = e.RowIndex;

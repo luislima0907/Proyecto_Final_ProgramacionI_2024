@@ -9,22 +9,30 @@ using System.Threading.Tasks;
 
 namespace CapaDeDatos
 {
+    // Esta clase manejará todas las consultas en nuestra base de datos relacionadas a la tabla de Producto
     public class CD_Producto
     {
+        // Creamos un método para listar los productos
         public List<Producto> Listar()
         {
+            // Creamos e instanciamos una lista de productos
             List<Producto> lista = new List<Producto>();
+
+            // Utilizamos nuestra cadena de conexión para acceder a la base de datos
             using (SqlConnection oConexion = new SqlConnection(Conexion.cadena))
             {
+                // Hacemos un try catch en caso de que falle la conexión
                 try
                 {
                     // Instanciamos StringBuilder, ya que nos permite hacer consultas con saltos de linea en sql
                     StringBuilder query = new StringBuilder();
                     query.AppendLine("select IdProducto,Codigo,Nombre,p.Descripcion,c.IdCategoria,c.Descripcion[DescripcionCategoria],PrecioDeCompra,PrecioDeVenta,Stock,p.Estado from PRODUCTO p");
                     query.AppendLine("inner join CATEGORIA c on c.IdCategoria = p.IdCategoria");
+
                     // instanciamos la seleccion de la tabla con el query y la conexion a nuestra base de datos
                     SqlCommand cmd = new SqlCommand(query.ToString(), oConexion);
-                    // aqui le estamos diciendo que el tipo de comando que ejecutara sera un texto
+
+                    // aqui le estamos diciendo que el tipo de comando que ejecutara sera de tipo texto
                     cmd.CommandType = CommandType.Text;
                     oConexion.Open();
 
@@ -90,7 +98,7 @@ namespace CapaDeDatos
                     Mensaje = cmd.Parameters["Mensaje"].Value.ToString();
                 }
             }
-            // Si causa algun fallo a la hora de registrar, que nos muestre el error de la excepcion por medio de un mensaje
+            // Si causa algun fallo a la hora de registrar, que nos muestre el error de la excepción por medio de un mensaje
             catch (Exception ex)
             {
                 idProductoGenerado = 0;
@@ -100,7 +108,7 @@ namespace CapaDeDatos
             return idProductoGenerado;
 
         }
-        // Creamos un metodo para editar a los Productos en nuestra base de datos
+        // Creamos un método para editar a los Productos en nuestra base de datos
         public bool EditarProducto(Producto objProducto, out string Mensaje)
         {
             bool resultado = false;
@@ -132,7 +140,7 @@ namespace CapaDeDatos
                     Mensaje = cmd.Parameters["Mensaje"].Value.ToString();
                 }
             }
-            // Si causa algun fallo a la hora de editar, que nos muestre el error de la excepcion por medio de un mensaje
+            // Si causa algún fallo a la hora de editar, que nos muestre el error de la excepción por medio de un mensaje
             catch (Exception ex)
             {
                 resultado = false;
@@ -141,7 +149,7 @@ namespace CapaDeDatos
             return resultado;
 
         }
-        // Creamos un metodo para editar a los Productos en nuestra base de datos
+        // Creamos un metodo para eliminar a los Productos en nuestra base de datos
         public bool EliminarProducto(Producto objProducto, out string Mensaje)
         {
             bool respuesta = false;
@@ -154,9 +162,12 @@ namespace CapaDeDatos
                     // Por medio de los parametros con valores hacemos posible el registro de los Productos
                     SqlCommand cmd = new SqlCommand("SP_ELIMINAR_PRODUCTO", oConexion);
                     cmd.Parameters.AddWithValue("IdProducto", objProducto.IdProducto);
+
                     // Para los datos de salida tenemos que darle el nombre del parametro en sql y despues definir de que tipo es, asi mismo le especificamos por medio de direction el tipo de dato que es, si es de entrada o salida
                     cmd.Parameters.Add("Respuesta", SqlDbType.Int).Direction = ParameterDirection.Output;
                     cmd.Parameters.Add("Mensaje", SqlDbType.VarChar, 500).Direction = ParameterDirection.Output;
+
+                    // le decimos que el tipo de comando es una procedura
                     cmd.CommandType = CommandType.StoredProcedure;
 
                     oConexion.Open();
@@ -167,7 +178,7 @@ namespace CapaDeDatos
                     Mensaje = cmd.Parameters["Mensaje"].Value.ToString();
                 }
             }
-            // Si causa algun fallo a la hora de editar, que nos muestre el error de la excepcion por medio de un mensaje
+            // Si causa algun fallo a la hora de eliminar, que nos muestre el error de la excepción por medio de un mensaje
             catch (Exception ex)
             {
                 respuesta = false;

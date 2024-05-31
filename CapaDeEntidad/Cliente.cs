@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace CapaDeEntidad
 {
+    // La entidad Cliente manejará toda la información con respecto a los clientes al momento de realizar una venta
     public class Cliente
     {
         public int IdCliente { get; set; }

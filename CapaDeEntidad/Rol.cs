@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace CapaDeEntidad
 {
+    // La entidad Rol asignará roles a los usuarios que se registren en el programa
+    // Los roles son: Administrador y Empleado, cada uno tiene ciertas prioridades dentro del programa
     public class Rol
     {
         public int IdRol { get; set; }

@@ -10,8 +10,10 @@ using System.Threading.Tasks;
 
 namespace CapaDeDatos
 {
+    // Esta clase manejará todas las consultas en nuestra base de datos relacionadas a la tabla de Compra
     public class CD_Compra
     {
+        // Creamos un método para crear un id para una compra
         public int ObtenerCorrelativo()
         {
             int IdCorrelativo = 0;
@@ -23,9 +25,11 @@ namespace CapaDeDatos
                     // Instanciamos StringBuilder, ya que nos permite hacer consultas con saltos de linea en sql
                     StringBuilder query = new StringBuilder();
                     query.AppendLine("select count(*) + 1 from COMPRA");
-                    // instanciamos la seleccion de la tabla con el query y la conexion a nuestra base de datos
+
+                    // instanciamos SqlCommand para realizar la seleccion de la tabla con el query y la conexion a nuestra base de datos
                     SqlCommand cmd = new SqlCommand(query.ToString(), oConexion);
-                    // aqui le estamos diciendo que el tipo de comando que ejecutara sera un texto
+
+                    // aqui le estamos diciendo que el tipo de comando que ejecutara sera de tipo texto
                     cmd.CommandType = CommandType.Text;
                     oConexion.Open();
 
@@ -40,7 +44,7 @@ namespace CapaDeDatos
             return IdCorrelativo;
         }
 
-
+        // Creamos un método para registrar las compras de los productos que hagamos dentro del programa
         public bool Registrar(Compra objCompra, DataTable DetalleCompra, out string Mensaje)
         {
             bool Respuesta = false;
@@ -50,7 +54,6 @@ namespace CapaDeDatos
             {
                 try
                 {
-
                     // instanciamos la seleccion de la tabla con el query y la conexion a nuestra base de datos
                     SqlCommand cmd = new SqlCommand("SP_REGISTRAR_COMPRA", oConexion);
                     cmd.Parameters.AddWithValue("IdUsuario", objCompra.oUsuario.IdUsuario);
@@ -60,11 +63,12 @@ namespace CapaDeDatos
                     cmd.Parameters.AddWithValue("MontoTotal", objCompra.MontoTotal);
                     cmd.Parameters.AddWithValue("DetalleDeLaCompra", DetalleCompra);
 
-                    // Para los datos de salida tenemos que darle el nombre del parametro en sql y despues definir de que tipo es, asi mismo le especificamos por medio de direction el tipo de dato que es, si es de entrada o salida
+                    // Para los datos de salida tenemos que darle el nombre del parámetro en sql y despues definir de que tipo es,
+                    // así mismo, le específicamos por medio de Direction el tipo de dato que es, si es de entrada o salida
                     cmd.Parameters.Add("Resultado", SqlDbType.Int).Direction = ParameterDirection.Output;
                     cmd.Parameters.Add("Mensaje", SqlDbType.VarChar, 500).Direction = ParameterDirection.Output;
 
-                    // aqui le estamos diciendo que el tipo de comando que ejecutara sera una procedura
+                    // aqui le estamos diciendo que el tipo de comando que ejecutará sera una procedura
                     cmd.CommandType = CommandType.StoredProcedure;
                     oConexion.Open();
                     cmd.ExecuteNonQuery();
@@ -82,10 +86,13 @@ namespace CapaDeDatos
             return Respuesta;
         }
 
+        // Creamos un método para obtener las compras de los productos que hicimos en el programa
         public Compra ObtenerCompra(string numero)
         {
+            // Creamos un objeto de tipo compra
             Compra objCompra = new Compra();
 
+            // Usamos la cadena de conexión para acceder a nuestra base de datos
             using (SqlConnection oConexion = new SqlConnection(Conexion.cadena))
             {
                 try
@@ -101,19 +108,21 @@ namespace CapaDeDatos
                     query.AppendLine("inner join PROVEEDOR pr on pr.IdProveedor = c.IdProveedor");
                     query.AppendLine("where c.NumeroDeDocumento = @numero");
 
-                    // instanciamos la seleccion de la tabla con el query y la conexion a nuestra base de datos
+                    // instanciamos SqlCommand para poder realizar la seleccion de la tabla con la query(consulta) y la conexión a nuestra base de datos
                     SqlCommand cmd = new SqlCommand(query.ToString(), oConexion);
                     cmd.Parameters.AddWithValue("@numero", numero);
-                    // aqui le estamos diciendo que el tipo de comando que ejecutara sera un texto
+
+                    // aqui le estamos diciendo que el tipo de comando que ejecutara sera de tipo texto
                     cmd.CommandType = CommandType.Text;
                     oConexion.Open();
 
                     // hacemos que pueda leer nuestro comando y ejecutarlo
                     using (SqlDataReader dr = cmd.ExecuteReader())
                     {
-                        // mientras pueda leer la seleccion que hicimos hacia la tabla de usuarios
+                        // mientras pueda leer la seleccion que hicimos hacia la tabla de compra
                         while (dr.Read())
                         {
+                            // que instancie un objeto de tipo compra
                             objCompra = new Compra()
                             {
                                 IdCompra = Convert.ToInt32(dr["IdCompra"]),
@@ -124,52 +133,53 @@ namespace CapaDeDatos
                                 MontoTotal = Convert.ToDecimal(dr["MontoTotal"].ToString()),
                                 FechaDeRegistro = dr["FechaDeRegistro"].ToString()
                             };
-                            // que pueda crear una lista que contenga los usuarios de la tabla
-                            //lista.Add(new Usuario()
-                            //{
-                            //    // aqui convertimos el tipo de valor que contendra cada dato de nuestra tabla, tenemos que definirlo igual que cuando lo declaramos en sql
-                            //    IdUsuario = Convert.ToInt32(dr["IdUsuario"]),
-                            //    Documento = dr["Documento"].ToString(),
-                            //    NombreCompleto = dr["NombreCompleto"].ToString(),
-                            //    Correo = dr["Correo"].ToString(),
-                            //    Contraseña = dr["Contraseña"].ToString(),
-                            //    Estado = Convert.ToBoolean(dr["Estado"]),
-                            //    oRol = new Rol() { IdRol = Convert.ToInt32(dr["IdRol"]), Descripcion = dr["Descripcion"].ToString() }
-                            //});
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    // si hay algun error a la hora de crear la lista, que la devuelva vacia
+                    // si hay algún error a la hora de crear la compra, que la devuelva vacia.
                     objCompra = new Compra();
                 }
             }
             return objCompra;
         }
 
-        public List<Detalle_Compra> ObtenerDetalleDeLaCompra(int IdCompra)
+        // Creamos un método que almacene la información de los detalles acerca de la compra de los productos
+        public List<Detalle_Compra> ObtenerDetalleDeLaCompra(int IdCompra)// recibe como parámetro el id de la compra para poder recuperarla
         {
+            // Creamos una lista de con el detalle de la compra y la instanciamos
             List<Detalle_Compra> oLista = new List<Detalle_Compra>();
+
+            // Hacemos un try catch en caso de que falle la conexión
             try
             {
+                // Usamos la cadena de conexión para acceder a nuestra base de datos
                 using (SqlConnection oConexion = new SqlConnection(Conexion.cadena))
                 {
+                    // abrimos la conexión
                     oConexion.Open();
-                    StringBuilder query = new StringBuilder();
 
+                    // Instanciamos StringBuilder, ya que nos permite hacer consultas con saltos de linea en sql
+                    StringBuilder query = new StringBuilder();
                     query.AppendLine("select p.Nombre,dc.PrecioDeCompra,dc.Cantidad,dc.MontoTotal from DETALLE_COMPRA dc");
                     query.AppendLine("inner join PRODUCTO p on p.IdProducto = dc.IdProducto");
                     query.AppendLine("where dc.IdCompra = @IdCompra");
 
+                    // instanciamos SqlCommand para poder realizar la seleccion de la tabla con la query(consulta) y la conexión a nuestra base de datos
                     SqlCommand cmd = new SqlCommand(query.ToString(), oConexion);
                     cmd.Parameters.AddWithValue("IdCompra", IdCompra);
+
+                    // aqui le estamos diciendo que el tipo de comando que ejecutara sera de tipo texto
                     cmd.CommandType = System.Data.CommandType.Text;
 
+                    // hacemos que pueda leer nuestro comando y ejecutarlo
                     using (SqlDataReader dr = cmd.ExecuteReader())
                     {
+                        // mientras pueda leer la seleccion que hicimos hacia la tabla de compra
                         while (dr.Read())
                         {
+                            // que pueda agregar a la lista un objeto de tipo detalle de la compra
                             oLista.Add(new Detalle_Compra()
                             {
                                 oProducto = new Producto() { Nombre = dr["Nombre"].ToString() },
@@ -183,6 +193,7 @@ namespace CapaDeDatos
             }
             catch (Exception ex)
             {
+                // si hay algún error al momento de crear o agregar un objeto a la lista, que la devuelva vacía
                 oLista = new List<Detalle_Compra>();
             }
             return oLista;

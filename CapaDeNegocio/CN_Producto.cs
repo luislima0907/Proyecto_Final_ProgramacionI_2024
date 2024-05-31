@@ -10,7 +10,8 @@ namespace CapaDeNegocio
 {
     public class CN_Producto
     {
-        // instanciamos CD_Producto en la capa de Negocio
+        // instanciamos CD_Producto en la capa de Negocio para acceder a los metodos que contienen las consultas
+        // en sql server
         private CD_Producto objcd_Producto = new CD_Producto();
 
         public List<Producto> Listar()
@@ -38,9 +39,9 @@ namespace CapaDeNegocio
             // Hacemos las mismas validaciones de registrar un Producto pero ahora en editar para que se mantenga la igualdad en ambos metodos
             Mensaje = string.Empty;
 
-            if (objProducto.Codigo == "") Mensaje += "Es necesario añadir el codigo del producto.\n";
+            if (objProducto.Codigo == "") Mensaje += "Es necesario añadir el código del producto.\n";
             if (objProducto.Nombre == "") Mensaje += "Es necesario añadir el nombre del producto.\n";
-            if (objProducto.Descripcion == "") Mensaje += "Es necesario añadir una descripcion al producto.\n";
+            if (objProducto.Descripcion == "") Mensaje += "Es necesario añadir una descripción al producto.\n";
 
             if (Mensaje != string.Empty) return false;
             else return objcd_Producto.EditarProducto(objProducto, out Mensaje);

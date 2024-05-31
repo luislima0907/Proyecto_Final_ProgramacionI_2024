@@ -29,16 +29,16 @@ namespace CapaDePresentacion
             // Cuando el estado del Proveedor devuelva false, se dira que no esta activo
             cboEstado.Items.Add(new OpcionCombo() { Valor = 0, Texto = "No Activo" });
 
-            // Con esto decimos que solo nos devuelva el texto almacenado en el objeto de la OpcionCombo en nuestro formulario de Proveedors
+            // Con esto decimos que solo nos devuelva el texto almacenado en el objeto de la OpcionCombo en nuestro formulario de Proveedores
             cboEstado.DisplayMember = "Texto";
 
-            // Con esto almacenamos el valor de true o false que nos devuelva la OpcionCombo en el formulario de Proveedors
+            // Con esto almacenamos el valor de true o false que nos devuelva la OpcionCombo en el formulario de Proveedores
             cboEstado.ValueMember = "Valor";
 
-            // Con esto decimos que solo seleccione el primer elemento mostrado en el display del estado del formulario de Proveedors.
+            // Con esto decimos que solo seleccione el primer elemento mostrado en el display del estado del formulario de Proveedores.
             cboEstado.SelectedIndex = 0;
 
-            // Con este foreach almacenamos los elementos que se nos muestren en la lista de Proveedors en un boton con opcion multiple que nos servira para buscar a los Proveedors de una manera especificia, es decir, por su documento, nombre, etc
+            // Con este foreach almacenamos los elementos que se nos muestren en la lista de Proveedores en un boton con opcion multiple que nos servira para buscar a los Proveedores de una manera especificia, es decir, por su documento, nombre, etc
             foreach (DataGridViewColumn columnas in dgvData.Columns)
             {
                 if (columnas.Visible == true && columnas.Name != "btnSeleccionar") cboBusqueda.Items.Add(new OpcionCombo() { Valor = columnas.Name, Texto = columnas.HeaderText });
@@ -47,7 +47,7 @@ namespace CapaDePresentacion
             cboBusqueda.ValueMember = "Valor";
             cboBusqueda.SelectedIndex = 0;
 
-            // Con esto mostramos a los Proveedors que tengamos en nuestra base de datos en el formulario de Proveedors al momento de iniciarlo
+            // Con esto mostramos a los Proveedores que tengamos en nuestra base de datos en el formulario de Proveedores al momento de iniciarlo
             List<Proveedor> ListaProveedors = new CN_Proveedor().Listar();
 
             foreach (Proveedor item in ListaProveedors)
@@ -73,16 +73,17 @@ namespace CapaDePresentacion
             Regex confirmarElFormatoDelCorreo = new Regex(formatoDelCorreo); // usamos regex para guardar la expresion regular y poder compararla mas adelante
             MatchCollection correoDelUsuario = confirmarElFormatoDelCorreo.Matches(txtCorreo.Text); // usamos matchcollection para que compare con la caja de texto del correo
 
-            // hacemos la validacion de un numero de documento que tenga 6 digitos con la ayuda de las expresiones regulares
-            string patronDelNumeroDeTelefono = @"\+502\s\d\d\d\d\s\d\d\d\d"; // expresion regular para el numero de documento
+            // hacemos la validacion de un numero de telefono que tenga 8 digitos y que tenga como prefijo +502, con la ayuda de las expresiones regulares
+            string patronDelNumeroDeTelefono = @"\+502\s\d\d\d\d\s\d\d\d\d"; // expresion regular para el numero de telefono
             Regex confirmarPatronDelTelefono = new Regex(patronDelNumeroDeTelefono); // usamos regex para guardar la expresion regular y poder compararla mas adelante
-            MatchCollection numeroDeTelefono = confirmarPatronDelTelefono.Matches(txtTelefono.Text); // usamos matchcollection para que compare con la caja de texto del documento
+            MatchCollection numeroDeTelefono = confirmarPatronDelTelefono.Matches(txtTelefono.Text); // usamos matchcollection para que compare con la caja de texto del numero de telefono
 
-            // hacemos la validacion de un correo electronico que tenga el siguiente formato: nombre_de_usuario@nombre_de_dominio.com
-            string formatoDeLaRazonSocial = @"^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]+(?:\s+[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]+){1,5}(?<!\s)$"; // expresion regular para el correo del usuario
+            // hacemos la validacion de una razon social para el proveedor
+            string formatoDeLaRazonSocial = @"^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]+(?:\s+[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]+){1,5}(?<!\s)$"; // expresion regular para la razon social de un proveedor
             Regex confirmarElFormatoDeLaRazonSocial = new Regex(formatoDeLaRazonSocial); // usamos regex para guardar la expresion regular y poder compararla mas adelante
-            MatchCollection razonSocial = confirmarElFormatoDeLaRazonSocial.Matches(txtRazonSocial.Text); // usamos matchcollection para que compare con la caja de texto del correo
+            MatchCollection razonSocial = confirmarElFormatoDeLaRazonSocial.Matches(txtRazonSocial.Text); // usamos matchcollection para que compare con la caja de texto de la razon social
 
+            // si el metodo Matches devuelve 1 entonces que guarde el proveedor
             if (razonSocial.Count > 0 && numeroDeDocumento.Count > 0 && razonSocial.Count > 0 && numeroDeTelefono.Count > 0)
             {
                 Proveedor objProveedor = new Proveedor()
@@ -121,7 +122,7 @@ namespace CapaDePresentacion
 
                     if (resultado)
                     {
-                        // Obtenemos el indice de la fila seleccionada en nuestro formulario de Proveedors
+                        // Obtenemos el indice de la fila seleccionada en nuestro formulario de Proveedores
                         DataGridViewRow row = dgvData.Rows[Convert.ToInt32(txtIndice.Text)];
 
                         // Obtenemos los demas datos de la fila seleccionada
@@ -328,7 +329,7 @@ namespace CapaDePresentacion
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("Error al generar con el registro de los proveedores", "Mensaje", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        MessageBox.Show("Error al generar el registro de los proveedores", "Mensaje", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     }
                 }
             }

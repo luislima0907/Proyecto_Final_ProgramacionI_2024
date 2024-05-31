@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace CapaDeEntidad
 {
+    // Esta entidad se encargará de brindarle una categoría a los productos que tengamos en nuestro inventario
     public class Categoria
     {
         public int IdCategoria { get; set; }

@@ -144,7 +144,7 @@ namespace CapaDePresentacion
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("Error al generar con el reporte de las compras", "Mensaje", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        MessageBox.Show("Error al generar el reporte de las compras", "Mensaje", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     }
                 }
             }
@@ -156,7 +156,7 @@ namespace CapaDePresentacion
 
             if (dgvData.Rows.Count > 0)
             {
-                // Iteramos y encontramos las filas que esten dentro de nuestro formulario de usuarios para acceder a sus datos por medio del ComboBox
+                // Iteramos y encontramos las filas que esten dentro de nuestro formulario de reporte de compras para acceder a sus datos por medio del ComboBox
                 foreach (DataGridViewRow row in dgvData.Rows)
                 {
                     // Hacemos una validacion que nos permita diferenciar entre mayusculas y minusculas o tambien entre palabras completas o letras

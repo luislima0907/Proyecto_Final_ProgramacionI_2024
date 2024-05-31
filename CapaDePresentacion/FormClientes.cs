@@ -73,16 +73,17 @@ namespace CapaDePresentacion
             Regex confirmarElFormatoDelCorreo = new Regex(formatoDelCorreo); // usamos regex para guardar la expresion regular y poder compararla mas adelante
             MatchCollection correoDelUsuario = confirmarElFormatoDelCorreo.Matches(txtCorreo.Text); // usamos matchcollection para que compare con la caja de texto del correo
 
-            // hacemos la validacion de un numero de documento que tenga 6 digitos con la ayuda de las expresiones regulares
-            string patronDelNumeroDeTelefono = @"\+502\s\d\d\d\d\s\d\d\d\d"; // expresion regular para el numero de documento
+            // hacemos la validacion de un numero de telefono que tenga 8 digitos y que tenga como prefijo +502, con la ayuda de las expresiones regulares
+            string patronDelNumeroDeTelefono = @"\+502\s\d\d\d\d\s\d\d\d\d"; // expresion regular para el numero de telefono
             Regex confirmarPatronDelTelefono = new Regex(patronDelNumeroDeTelefono); // usamos regex para guardar la expresion regular y poder compararla mas adelante
-            MatchCollection numeroDeTelefono = confirmarPatronDelTelefono.Matches(txtTelefono.Text); // usamos matchcollection para que compare con la caja de texto del documento
+            MatchCollection numeroDeTelefono = confirmarPatronDelTelefono.Matches(txtTelefono.Text); // usamos matchcollection para que compare con la caja de texto del telefono
 
-            // hacemos la validacion de un correo electronico que tenga el siguiente formato: nombre_de_usuario@nombre_de_dominio.com
-            string formatoDelNombre = @"^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]+(?:\s+[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]+){1,5}(?<!\s)$"; // expresion regular para el correo del usuario
+            // hacemos la validacion de un nombre que tenga el siguiente formato: NOMBRE APELLIDO
+            string formatoDelNombre = @"^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]+(?:\s+[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]+){1,5}(?<!\s)$"; // expresion regular para el nombre 
             Regex confirmarElFormatoDelNombre = new Regex(formatoDelNombre); // usamos regex para guardar la expresion regular y poder compararla mas adelante
-            MatchCollection nombreDelCliente = confirmarElFormatoDelNombre.Matches(txtNombreCompleto.Text); // usamos matchcollection para que compare con la caja de texto del correo
+            MatchCollection nombreDelCliente = confirmarElFormatoDelNombre.Matches(txtNombreCompleto.Text); // usamos matchcollection para que compare con la caja de texto del nombre
 
+            // si el metodo Matches devuelve 1 entonces que guarde el cliente
             if(nombreDelCliente.Count > 0 && numeroDeTelefono.Count > 0 && numeroDeDocumento.Count > 0 && correoDelUsuario.Count > 0)
             {
                 Cliente objCliente = new Cliente()
@@ -202,7 +203,7 @@ namespace CapaDePresentacion
                     txtCorreo.Text = dgvData.Rows[indice].Cells["Correo"].Value.ToString();
                     txtTelefono.Text = dgvData.Rows[indice].Cells["Telefono"].Value.ToString();
 
-                    // hacemos lo mismo que el tipo de Cliente pero esta vez con su estado
+                    // hacemos un foreach para almacenar el estado del cliente
                     foreach (OpcionCombo oc in cboEstado.Items)
                     {
                         if (Convert.ToInt32(oc.Valor) == Convert.ToInt32(dgvData.Rows[indice].Cells["EstadoValor"].Value))
@@ -328,7 +329,7 @@ namespace CapaDePresentacion
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("Error al generar con el registro de los clientes", "Mensaje", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        MessageBox.Show("Error al generar el registro de los clientes", "Mensaje", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     }
                 }
             }

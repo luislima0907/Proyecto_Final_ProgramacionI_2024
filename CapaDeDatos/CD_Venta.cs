@@ -9,8 +9,10 @@ using CapaDeEntidad;
 
 namespace CapaDeDatos
 {
+    // Esta clase manejará todas las consultas en nuestra base de datos relacionadas a la tabla de Venta
     public class CD_Venta
     {
+        // Creamos un método para crear el id de una venta
         public int ObtenerCorrelativo()
         {
             int IdCorrelativo = 0;
@@ -23,10 +25,10 @@ namespace CapaDeDatos
                     StringBuilder query = new StringBuilder();
                     query.AppendLine("select count(*) + 1 from VENTA");
 
-                    // instanciamos la seleccion de la tabla con el query y la conexion a nuestra base de datos
+                    // instanciamos SqlCommand para realizar la seleccion de la tabla con el query y la conexion a nuestra base de datos
                     SqlCommand cmd = new SqlCommand(query.ToString(), oConexion);
                     
-                    // aqui le estamos diciendo que el tipo de comando que ejecutara sera un texto
+                    // aqui le estamos diciendo que el tipo de comando que ejecutara sera de tipo texto
                     cmd.CommandType = CommandType.Text;
                     oConexion.Open();
 
@@ -41,13 +43,16 @@ namespace CapaDeDatos
             return IdCorrelativo;
         }
 
-        // Creamos un metodo para el manejo del stock de un producto al momento de realizar una venta
+        // Creamos dos métodos para el manejo del stock de un producto al momento de realizar una venta
+        // uno para restar stock a un producto y otro para sumarle stock a un producto
         public bool RestarStock(int IdProducto, int Cantidad)
         {
             bool respuesta = true;
 
+            // utilizamos la cadena de conexión para acceder a la base de datos
             using (SqlConnection oConexion = new SqlConnection(Conexion.cadena))
             {
+                // Hacemos un try catch para el manejo de errores de la conexión
                 try
                 {
                     // Instanciamos StringBuilder, ya que nos permite hacer consultas con saltos de linea en sql
@@ -58,7 +63,7 @@ namespace CapaDeDatos
                     // se le reste al stock que hay del producto
                     query.AppendLine("update PRODUCTO set Stock -= @Cantidad where IdProducto = @IdProducto");
                     
-                    // instanciamos la seleccion de la tabla con el query y la conexion a nuestra base de datos
+                    // instanciamos SqlCommand para realizar la seleccion de la tabla con la query y la conexión a nuestra base de datos
                     SqlCommand cmd = new SqlCommand(query.ToString(), oConexion);
                     cmd.Parameters.AddWithValue("@Cantidad", Cantidad);
                     cmd.Parameters.AddWithValue("@IdProducto", IdProducto);
@@ -78,12 +83,15 @@ namespace CapaDeDatos
             return respuesta;
         }
 
+        // Método para sumar stock a un producto
         public bool SumarStock(int IdProducto, int Cantidad)
         {
             bool respuesta = true;
 
+            // Utilizamos la cadena de conexión para acceder a la base de datos
             using (SqlConnection oConexion = new SqlConnection(Conexion.cadena))
             {
+                // hacemos un try catch para el manejo de errores de la conexión
                 try
                 {
                     // Instanciamos StringBuilder, ya que nos permite hacer consultas con saltos de linea en sql
@@ -94,12 +102,12 @@ namespace CapaDeDatos
                     // entonces la cantidad que ingresamos anteriormente se le sumara nuevamente al stock que hay del producto
                     query.AppendLine("update PRODUCTO set Stock += @Cantidad where IdProducto = @IdProducto");
 
-                    // instanciamos la seleccion de la tabla con el query y la conexion a nuestra base de datos
+                    // instanciamos SqlCommand para realizar la seleccion de la tabla con la query y la conexión a nuestra base de datos
                     SqlCommand cmd = new SqlCommand(query.ToString(), oConexion);
                     cmd.Parameters.AddWithValue("@Cantidad", Cantidad);
                     cmd.Parameters.AddWithValue("@IdProducto", IdProducto);
 
-                    // aqui le estamos diciendo que el tipo de comando que ejecutara sera un texto
+                    // aqui le estamos diciendo que el tipo de comando que ejecutara sera de tipo texto
                     cmd.CommandType = CommandType.Text;
                     oConexion.Open();
 
@@ -114,16 +122,19 @@ namespace CapaDeDatos
             return respuesta;
         }
 
+        // Creamos un método para registrar una venta
         public bool Registrar(Venta objVenta, DataTable DetalleVenta, out string Mensaje)
         {
             bool Resultado = false;
             Mensaje = string.Empty;
 
+            // utilizamos la cadena de conexión para acceder a la base de datos
             using (SqlConnection oConexion = new SqlConnection(Conexion.cadena))
             {
+                // hacemos un try catch para el manejo de errores de la conexión
                 try
                 {
-                    // instanciamos la seleccion de la tabla con el query y la conexion a nuestra base de datos
+                    // instanciamos SqlCommand para realizar la seleccion de la tabla con la query y la conexión a nuestra base de datos
                     SqlCommand cmd = new SqlCommand("SP_REGISTRAR_VENTA", oConexion);
                     cmd.Parameters.AddWithValue("IdUsuario", objVenta.oUsuario.IdUsuario);
                     cmd.Parameters.AddWithValue("TipoDeDocumento", objVenta.TipoDeDocumento);
@@ -157,17 +168,24 @@ namespace CapaDeDatos
             return Resultado;
         }
 
+        // Creamos un método para obtener una venta por medio de su numero de documento
         public Venta ObtenerVenta(string numero)
         {
+            // Creamos un objeto de tipo Venta
             Venta objVenta = new Venta();
 
+            // Utilizamos la cadena de conexión para acceder a la base de datos
             using (SqlConnection oConexion = new SqlConnection(Conexion.cadena))
             {
+                // Hacemos un try catch para manejar los errores de la conexión
                 try
                 {
+                    // Abrimos la conexión
                     oConexion.Open();
+
                     // Instanciamos StringBuilder, ya que nos permite hacer consultas con saltos de linea en sql
                     StringBuilder query = new StringBuilder();
+
                     // el metodo AppendLine nos permite hacer consultas con saltos de linea
                     query.AppendLine("select v.Idventa,");
                     query.AppendLine("u.NombreCompleto,v.DocumentoDelCliente,v.NombreDelCliente,");
@@ -178,18 +196,20 @@ namespace CapaDeDatos
                     query.AppendLine("inner join USUARIO u on u.IdUsuario = v.IdUsuario");
                     query.AppendLine("where v.NumeroDeDocumento = @numero");
 
-                    // instanciamos la seleccion de la tabla con el query y la conexion a nuestra base de datos
+                    // instanciamos SqlCommand para realizar la seleccion de la tabla con la query y la conexión a nuestra base de datos
                     SqlCommand cmd = new SqlCommand(query.ToString(), oConexion);
                     cmd.Parameters.AddWithValue("@numero", numero);
+
                     // aqui le estamos diciendo que el tipo de comando que ejecutara sera un texto
                     cmd.CommandType = CommandType.Text;
 
                     // hacemos que pueda leer nuestro comando y ejecutarlo
                     using (SqlDataReader dr = cmd.ExecuteReader())
                     {
-                        // mientras pueda leer la seleccion que hicimos hacia la tabla de usuarios
+                        // mientras pueda leer la seleccion que hicimos hacia la tabla de Venta
                         while (dr.Read())
                         {
+                            // Que pueda crear una venta
                             objVenta = new Venta()
                             {
                                 IdVenta = Convert.ToInt32(dr["IdVenta"]),
@@ -208,35 +228,46 @@ namespace CapaDeDatos
                 }
                 catch (Exception ex)
                 {
-                    // si hay algun error a la hora de crear la lista, que la devuelva vacia
+                    // si hay algún error a la hora de crear la venta, que la devuelva vacia
                     objVenta = new Venta();
                 }
             }
             return objVenta;
         }
 
+        // Creamos un método para obtener el detalle de una venta por medio de su id como parámetro
         public List<Detalle_Venta> ObtenerDetalleDeLaVenta(int IdVenta)
         {
+            // Creamos una lista de los detalles de la venta
             List<Detalle_Venta> oLista = new List<Detalle_Venta>();
+
+            // Hacemos un try catch para el manejo de errores de la conexión
             try
             {
+                // Utilizamos la cadena de conexión para acceder a la base de datos
                 using (SqlConnection oConexion = new SqlConnection(Conexion.cadena))
                 {
+                    // abrimos la conexión
                     oConexion.Open();
-                    StringBuilder query = new StringBuilder();
 
+                    // Instanciamos StringBuilder, ya que nos permite hacer consultas con saltos de linea en sql
+                    StringBuilder query = new StringBuilder();
                     query.AppendLine("select p.Nombre,dv.PrecioDeVenta,dv.Cantidad,dv.SubTotal from DETALLE_VENTA dv");
                     query.AppendLine("inner join PRODUCTO p on p.IdProducto = dv.IdProducto");
                     query.AppendLine("where dv.IdVenta = @IdVenta");
 
+                    // instanciamos SqlCommand para realizar la seleccion de la tabla con la query y la conexión a nuestra base de datos
                     SqlCommand cmd = new SqlCommand(query.ToString(), oConexion);
                     cmd.Parameters.AddWithValue("IdVenta", IdVenta);
                     cmd.CommandType = System.Data.CommandType.Text;
 
+                    // leemos y ejecutamos la consulta
                     using (SqlDataReader dr = cmd.ExecuteReader())
                     {
+                        // mientras pueda leer la seleccion que hicimos hacia la tabla de Detalle_Venta
                         while (dr.Read())
                         {
+                            // que agregue a la lista el detalle de la venta realizada
                             oLista.Add(new Detalle_Venta()
                             {
                                 oProducto = new Producto() { Nombre = dr["Nombre"].ToString() },
@@ -248,6 +279,7 @@ namespace CapaDeDatos
                     }
                 }
             }
+            // si hubo errores, que devuelva la lista vacia.
             catch (Exception ex)
             {
                 oLista = new List<Detalle_Venta>();

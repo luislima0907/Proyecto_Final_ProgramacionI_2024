@@ -9,24 +9,32 @@ using System.Threading.Tasks;
 
 namespace CapaDeDatos
 {
+    // Esta clase manejará todas las consultas en nuestra base de datos relacionadas a la tabla de Cliente
     public class CD_Cliente
     {
+        // Creamos una lista con los clientes que tengamos en nuestro programa
         public List<Cliente> Listar()
         {
+            // Instanciamos la lista para poder almacenar valores(clientes) dentro de ella
             List<Cliente> lista = new List<Cliente>();
+
+            // Usamos la cadena de conexión hacia nuestra base de datos para poder hacer las consultas
             using (SqlConnection oConexion = new SqlConnection(Conexion.cadena))
             {
+                // Hacemos un try catch en caso de que la conexión falle
                 try
                 {
                     // Instanciamos StringBuilder, ya que nos permite hacer consultas con saltos de linea en sql
                     StringBuilder query = new StringBuilder();
                     query.AppendLine("select IdCliente,Documento,NombreCompleto,Correo,Telefono,Estado from CLIENTE");
                     
-                    // instanciamos la seleccion de la tabla con el query y la conexion a nuestra base de datos
+                    // instanciamos la seleccion de la tabla con la query(consulta) y la conexión a nuestra base de datos.
                     SqlCommand cmd = new SqlCommand(query.ToString(), oConexion);
                     
-                    // aqui le estamos diciendo que el tipo de comando que ejecutara sera un texto
+                    // aqui le estamos diciendo que el tipo de comando que ejecutara sera de tipo texto.
                     cmd.CommandType = CommandType.Text;
+
+                    // Abrimos la conexión hacia nuestra base de datos
                     oConexion.Open();
 
                     // hacemos que pueda leer nuestro comando y ejecutarlo
@@ -51,24 +59,25 @@ namespace CapaDeDatos
                 }
                 catch (Exception ex)
                 {
-                    // si hay algun error a la hora de crear la lista, que la devuelva vacia
+                    // si hay algún error a la hora de crear la lista, que la devuelva vacía.
                     lista = new List<Cliente>();
                 }
             }
             return lista;
         }
 
-        // Creamos un metodo para registrar los Clientes y almacenarlos en nuestra base de datos
+        // Creamos un método para registrar los Clientes y almacenarlos en nuestra base de datos
         public int RegistrarCliente(Cliente objCliente, out string Mensaje)
         {
             int idClienteGenerado = 0;
             Mensaje = string.Empty;
 
+            // Hacemos un try catch en caso de que la conexión falle
             try
             {
                 using (SqlConnection oConexion = new SqlConnection(Conexion.cadena))
                 {
-                    // Por medio de los parametros con valores hacemos posible el registro de los Clientes
+                    // Por medio de los parámetros con valores hacemos posible el registro de los Clientes
                     SqlCommand cmd = new SqlCommand("SP_REGISTRAR_CLIENTE", oConexion);
                     cmd.Parameters.AddWithValue("Documento", objCliente.Documento);
                     cmd.Parameters.AddWithValue("NombreCompleto", objCliente.NombreCompleto);
@@ -76,20 +85,21 @@ namespace CapaDeDatos
                     cmd.Parameters.AddWithValue("Telefono", objCliente.Telefono);
                     cmd.Parameters.AddWithValue("Estado", objCliente.Estado);
 
-                    // Para los datos de salida tenemos que darle el nombre del parametro en sql y despues definir de que tipo es, asi mismo le especificamos por medio de direction el tipo de dato que es, si es de entrada o salida
+                    // Para los datos de salida tenemos que darle el nombre del parámetro en sql y despues definir de que tipo es, asi mismo le especificamos por medio de direction el tipo de dato que es, si es de entrada o salida
                     cmd.Parameters.Add("Resultado", SqlDbType.Int).Direction = ParameterDirection.Output;
                     cmd.Parameters.Add("Mensaje", SqlDbType.VarChar, 500).Direction = ParameterDirection.Output;
                     cmd.CommandType = CommandType.StoredProcedure;
 
                     oConexion.Open();
 
+                    // Ejecutamos la consulta que declaramos en sql, en este caso una procedura
                     cmd.ExecuteNonQuery();
 
                     idClienteGenerado = Convert.ToInt32(cmd.Parameters["Resultado"].Value);
                     Mensaje = cmd.Parameters["Mensaje"].Value.ToString();
                 }
             }
-            // Si causa algun fallo a la hora de registrar, que nos muestre el error de la excepcion por medio de un mensaje
+            // Si causa algún fallo a la hora de registrar, que nos muestre el error de la excepción por medio de un mensaje
             catch (Exception ex)
             {
                 idClienteGenerado = 0;
@@ -98,7 +108,7 @@ namespace CapaDeDatos
             return idClienteGenerado;
         }
 
-        // Creamos un metodo para editar a los Clientes en nuestra base de datos
+        // Creamos un método para editar a los Clientes en nuestra base de datos
         public bool EditarCliente(Cliente objCliente, out string Mensaje)
         {
             bool respuesta = false;
@@ -108,7 +118,7 @@ namespace CapaDeDatos
             {
                 using (SqlConnection oConexion = new SqlConnection(Conexion.cadena))
                 {
-                    // Por medio de los parametros con valores hacemos posible el registro de los Clientes
+                    // Por medio de los parametros con valores hacemos posible la edición de los Clientes
                     SqlCommand cmd = new SqlCommand("SP_EDITAR_CLIENTE", oConexion);
                     cmd.Parameters.AddWithValue("IdCliente", objCliente.IdCliente);
                     cmd.Parameters.AddWithValue("Documento", objCliente.Documento);
@@ -124,13 +134,14 @@ namespace CapaDeDatos
 
                     oConexion.Open();
 
+                    // Ejecutamos la consulta que declaramos en sql, en este caso una procedura
                     cmd.ExecuteNonQuery();
 
                     respuesta = Convert.ToBoolean(cmd.Parameters["Resultado"].Value);
                     Mensaje = cmd.Parameters["Mensaje"].Value.ToString();
                 }
             }
-            // Si causa algun fallo a la hora de editar, que nos muestre el error de la excepcion por medio de un mensaje
+            // Si causa algún fallo a la hora de editar, que nos muestre el error de la excepción por medio de un mensaje
             catch (Exception ex)
             {
                 respuesta = false;
@@ -139,7 +150,7 @@ namespace CapaDeDatos
             return respuesta;
         }
 
-        // Creamos un metodo para editar a los Clientes en nuestra base de datos
+        // Creamos un método para eliminar a los Clientes en nuestra base de datos
         public bool EliminarCliente(Cliente objCliente, out string Mensaje)
         {
             bool respuesta = false;
@@ -156,11 +167,11 @@ namespace CapaDeDatos
                     cmd.CommandType = CommandType.Text;
                     oConexion.Open();
 
-                    // Si encuentra filas por eliminar, devuelve true, de lo contrario, no elimina naday devuelve false
+                    // Si encuentra filas por eliminar, devuelve true, de lo contrario, no elimina nada y devuelve false
                     respuesta = cmd.ExecuteNonQuery() > 0 ? true : false;
                 }
             }
-            // Si causa algun fallo a la hora de editar, que nos muestre el error de la excepcion por medio de un mensaje
+            // Si causa algún fallo a la hora de eliminar, que nos muestre el error de la excepción por medio de un mensaje
             catch (Exception ex)
             {
                 respuesta = false;

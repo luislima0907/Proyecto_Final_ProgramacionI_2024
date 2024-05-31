@@ -10,7 +10,8 @@ namespace CapaDeNegocio
 {
     public class CN_Reporte
     {
-        // instanciamos CD_Reporte en la capa de Negocio
+        // instanciamos CD_Reporte en la capa de Negocio para acceder a los metodos que contienen las consultas
+        // en sql server
         private CD_Reporte objcd_Reporte = new CD_Reporte();
 
         public List<ReporteDeCompras> Compra(string fechaDeInicio, string fechaDeFin, int idProveedor)

@@ -22,7 +22,6 @@ namespace CapaDePresentacion
 
         private void btnIngresar_Click(object sender, EventArgs e)
         {
-           //List<Usuario> TEST = new CN_Usuario().Listar();
             // como no tenemos usuarios registrados, pedimos que registre lo que ingresemos en la pantalla de login
             Usuario oUsuario = new CN_Usuario().Listar().Where(u => u.Documento == txtDocumento.Text && u.Contraseña == txtContraseña.Text).FirstOrDefault();
 

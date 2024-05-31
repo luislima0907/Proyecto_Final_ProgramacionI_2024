@@ -11,7 +11,8 @@ namespace CapaDeNegocio
 {
     public class CN_Usuario
     {
-        // instanciamos CD_Usuario en la capa de Negocio
+        // instanciamos CD_Usuario en la capa de Negocio para acceder a los metodos que contienen las consultas
+        // en sql server
         private CD_Usuario objcd_usuario = new CD_Usuario();
 
         public List<Usuario> Listar()

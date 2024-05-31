@@ -88,20 +88,20 @@ namespace CapaDePresentacion
         {
             string mensaje = string.Empty;
 
-            // hacemos la validacion de un numero de documento que tenga 6 digitos con la ayuda de las expresiones regulares
-            string patronDelCodigo = @"\w-\d\d\d"; // expresion regular para el numero de documento
+            // hacemos la validacion de un codigo que tenga el siguiente formato: Ejemplo G-789
+            string patronDelCodigo = @"\w-\d\d\d"; // expresion regular para el codigo
             Regex confirmarPatronDelCodigo = new Regex(patronDelCodigo); // usamos regex para guardar la expresion regular y poder compararla mas adelante
-            MatchCollection codigoDelProducto = confirmarPatronDelCodigo.Matches(txtCodigo.Text); // usamos matchcollection para que compare con la caja de texto del documento
+            MatchCollection codigoDelProducto = confirmarPatronDelCodigo.Matches(txtCodigo.Text); // usamos matchcollection para que compare con la caja de texto del codigo
 
-            // hacemos la validacion de un correo electronico que tenga el siguiente formato: nombre_de_usuario@nombre_de_dominio.com
-            string formatoDelNombre = @"^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]+(?:\s+[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]+){1,5}(?<!\s)$"; // expresion regular para el correo del usuario
+            // hacemos la validacion de un nombre que tenga el siguiente formato: Nombre completo del producto
+            string formatoDelNombre = @"^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]+(?:\s+[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]+){1,5}(?<!\s)$"; // expresion regular para el nombre del producto
             Regex confirmarElFormatoDelNombre = new Regex(formatoDelNombre); // usamos regex para guardar la expresion regular y poder compararla mas adelante
-            MatchCollection nombreDelProducto = confirmarElFormatoDelNombre.Matches(txtNombre.Text); // usamos matchcollection para que compare con la caja de texto del correo
+            MatchCollection nombreDelProducto = confirmarElFormatoDelNombre.Matches(txtNombre.Text); // usamos matchcollection para que compare con la caja de texto del nombre
 
-            // hacemos la validacion de un correo electronico que tenga el siguiente formato: nombre_de_usuario@nombre_de_dominio.com
-            string formatoDeLaDescripcion = @"^\d+(\.\d+)?\s[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]+(?:\s[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]+)*$"; // expresion regular para el correo del usuario
+            // hacemos la validacion de una descripcion para el producto: Cantidad Unidad_de_medida
+            string formatoDeLaDescripcion = @"^\d+(\.\d+)?\s[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]+(?:\s[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]+)*$"; // expresion regular para la descripcion del producto
             Regex confirmarElFormatoDeLaDescripcion = new Regex(formatoDeLaDescripcion); // usamos regex para guardar la expresion regular y poder compararla mas adelante
-            MatchCollection descripcionDelProducto = confirmarElFormatoDeLaDescripcion.Matches(txtDescripcion.Text); // usamos matchcollection para que compare con la caja de texto del correo
+            MatchCollection descripcionDelProducto = confirmarElFormatoDeLaDescripcion.Matches(txtDescripcion.Text); // usamos matchcollection para que compare con la caja de texto de la descripcion
 
             if (nombreDelProducto.Count > 0 && codigoDelProducto.Count > 0 && descripcionDelProducto.Count > 0)
             {
@@ -266,8 +266,6 @@ namespace CapaDePresentacion
 
         private void btnEliminar_Click(object sender, EventArgs e)
         {
-
-
             if (Convert.ToInt32(txtId.Text) != 0)
             {
                 // Un ejemplo de como crear una ventana emergente que contenga un mensaje con el objeto MessageBox y su atributo o metodo Show
@@ -381,7 +379,7 @@ namespace CapaDePresentacion
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("Error al generar con el reporte de los productos", "Mensaje", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        MessageBox.Show("Error al generar el reporte de los productos", "Mensaje", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     }
                 }
             }

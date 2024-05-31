@@ -26,6 +26,7 @@ namespace CapaDePresentacion
         public Inicio(Usuario objUsuario = null)
         {
             // creamos una condicional que no reciba ningun usuario de nuestra base de datos, sino que lo creamos desde la instacia de Usuario
+            // Este se usa durante el desarrollo del programa
             if (objUsuario == null)
             {
                 usuarioActual = new Usuario() { NombreCompleto = "ADMIN POR DEFECTO", IdUsuario = 1};
@@ -52,7 +53,7 @@ namespace CapaDePresentacion
                     iconMenu.Visible = false;
                 }
             }
-            // al momento de pasar al formulario de inicio, que nos muestre el nombre del usuario que acaba de ingresar, o bien, su tipo de usuario.
+            // al momento de pasar al formulario de inicio, que nos muestre el nombre del usuario que acaba de ingresar.
             lblUsuario.Text = usuarioActual.NombreCompleto;
         }
 
@@ -154,35 +155,36 @@ namespace CapaDePresentacion
 
         private void subMenuNegocio_Click(object sender, EventArgs e)
         {
-            // aqui hacemos referencia al menu principal del mantenedor en el objeto, y luego iniciamos el formulario de categoria
+            // aqui hacemos referencia al menu principal del mantenedor en el objeto, y luego iniciamos el formulario de negocio
             AbrirFormulario(menuMantenedor, new FormNegocio());
         }
 
         private void subMenuReporteDeCompras_Click(object sender, EventArgs e)
         {
-            // aqui hacemos referencia al menu principal del mantenedor en el objeto, y luego iniciamos el formulario de categoria
+            // aqui hacemos referencia al menu principal del mantenedor en el objeto, y luego iniciamos el formulario de reporte de compras
             AbrirFormulario(menuReportes, new FormReporteDeCompras());
         }
 
         private void subMenuReporteDeVentas_Click(object sender, EventArgs e)
         {
-            // aqui hacemos referencia al menu principal del mantenedor en el objeto, y luego iniciamos el formulario de categoria
+            // aqui hacemos referencia al menu principal del mantenedor en el objeto, y luego iniciamos el formulario de reporte de ventas
             AbrirFormulario(menuReportes, new FormReporteDeVentas());
-        }
-
-        private void menuAcercaDe_Click(object sender, EventArgs e)
-        {
-            MD_AcercaDe mD_AcercaDe = new MD_AcercaDe();
-            mD_AcercaDe.ShowDialog();
         }
 
         // con este boton cerramos el formulario
         private void btnSalir_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("¿Desea salir del programa?\n\nTendra que iniciar sesion nuevamente para ingresar al sistema", "Mensaje", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) 
+            if (MessageBox.Show("¿Desea salir del programa?\n\nTendrá que iniciar sesión nuevamente para ingresar al sistema", "Mensaje", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) 
             {
                 this.Close();
             }
+        }
+
+        // Creamos un formulario para hacer envios de correos con archivos adjuntos
+        private void menuEnvioDeCorreos_Click(object sender, EventArgs e)
+        {
+            MD_EnvioDeCorreo mD_EnvioDeCorreos = new MD_EnvioDeCorreo();
+            mD_EnvioDeCorreos.ShowDialog();
         }
     }
 }

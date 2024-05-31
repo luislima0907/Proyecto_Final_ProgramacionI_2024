@@ -10,13 +10,19 @@ using System.Threading.Tasks;
 
 namespace CapaDeDatos
 {
+    // Esta clase manejará todas las consultas en nuestra base de datos relacionadas a la tabla de Permiso
     public class CD_Permiso
     {
+        // Creamos un método para listar los permisos que tengamos
         public List<Permiso> Listar(int IdUsuario)
         {
+            // Creamos e instanciamos una lista de permisos
             List<Permiso> lista = new List<Permiso>();
+
+            // Utilizamos la cadena de conexión para acceder a la base de datos
             using (SqlConnection oConexion = new SqlConnection(Conexion.cadena))
             {
+                // Hacemos un try catch para manejar los erroes de nuestra conexión
                 try
                 {
                     // Instanciamos StringBuilder, ya que nos permite hacer consultas con saltos de linea en sql
@@ -24,7 +30,8 @@ namespace CapaDeDatos
                     query.AppendLine("select p.IdRol,p.NombreDeMenu from PERMISO p");
                     query.AppendLine("inner join ROL r on r.IdRol = p.IdRol");
                     query.AppendLine("inner join USUARIO u on u.IdRol = r.IdRol");
-                    // para asignar los menus a cada usuario en nuestro porgrama, nos basamos en el id que tenga el usuario segun su rol y permiso anteriormente definido, ademas se enviara como parametro el id del usuario
+
+                    // para asignar los menus a cada rol que tenga el usuario en nuestro programa, nos basamos en el id que tenga el usuario según su rol y permiso anteriormente definido, ademas se enviara como parametro el id del usuario
                     query.AppendLine("where u.IdUsuario = @idUsuario");
 
 

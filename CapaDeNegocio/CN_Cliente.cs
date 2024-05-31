@@ -11,7 +11,8 @@ namespace CapaDeNegocio
     public class CN_Cliente
     {
 
-        // instanciamos CD_Cliente en la capa de Negocio
+        // instanciamos CD_Cliente en la capa de Negocio para acceder a los metodos que contienen las consultas
+        // en sql server
         private CD_Cliente objcd_Cliente = new CD_Cliente();
 
         public List<Cliente> Listar()
@@ -20,7 +21,7 @@ namespace CapaDeNegocio
             return objcd_Cliente.Listar();
         }
 
-        // creamos y llamamos a los metodos de registrar, editar y eliminar Cliente
+        // creamos y llamamos a los metodos de registrar, editar y eliminar Clientes
         public int RegistrarCliente(Cliente objCliente, out string Mensaje)
         {
             // Hacemos unas validaciones al momento de registrar un nuevo Cliente

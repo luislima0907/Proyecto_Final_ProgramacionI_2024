@@ -6,9 +6,12 @@ using System.Threading.Tasks;
 
 namespace CapaDeEntidad
 {
+    // La entidad producto se encargará de administrar la información de los productos que tengamos en nuestro inventario
     public class Producto
     {
         public int IdProducto { get; set; }
+
+        // Relacionamos la categoria a nuestro producto para ver que tipo de producto tenemos
         public Categoria oCategoria { get; set; }
         public string Descripcion { get; set; }
         public string Codigo { get; set; }

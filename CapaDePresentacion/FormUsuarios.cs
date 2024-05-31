@@ -94,11 +94,12 @@ namespace CapaDePresentacion
             Regex confirmarElFormatoDelCorreo = new Regex(formatoDelCorreo); // usamos regex para guardar la expresion regular y poder compararla mas adelante
             MatchCollection correoDelUsuario = confirmarElFormatoDelCorreo.Matches(txtCorreo.Text); // usamos matchcollection para que compare con la caja de texto del correo
 
-            // hacemos la validacion de un correo electronico que tenga el siguiente formato: nombre_de_usuario@nombre_de_dominio.com
-            string formatoDelNombre = @"^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]+(?:\s+[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]+){1,5}(?<!\s)$"; // expresion regular para el correo del usuario
+            // hacemos la validacion de un nombre completo que tenga el siguiente formato: NOMBRE APELLIDO
+            string formatoDelNombre = @"^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]+(?:\s+[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]+){1,5}(?<!\s)$"; // expresion regular para el nombre del usuario
             Regex confirmarElFormatoDelNombre = new Regex(formatoDelNombre); // usamos regex para guardar la expresion regular y poder compararla mas adelante
-            MatchCollection nombreDelUsuario = confirmarElFormatoDelNombre.Matches(txtNombreCompleto.Text); // usamos matchcollection para que compare con la caja de texto del correo
+            MatchCollection nombreDelUsuario = confirmarElFormatoDelNombre.Matches(txtNombreCompleto.Text); // usamos matchcollection para que compare con la caja de texto del nombre
 
+            // si el metodo Matches devuelve 1 entonces que guarde el usuario
             if (numeroDeDocumento.Count > 0 && correoDelUsuario.Count > 0 && nombreDelUsuario.Count > 0)
             {
                 Usuario objUsuario = new Usuario()
@@ -368,7 +369,7 @@ namespace CapaDePresentacion
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("Error al generar con el registro de los usuarios", "Mensaje", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        MessageBox.Show("Error al generar el registro de los usuarios", "Mensaje", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     }
                 }
             }

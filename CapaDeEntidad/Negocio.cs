@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace CapaDeEntidad
 {
+    // Esta entidad sera la presentesación del Negocio en si.
     public class Negocio
     {
         public int IdNegocio { get; set; }

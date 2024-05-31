@@ -11,7 +11,8 @@ namespace CapaDeNegocio
 {
     public class CN_Compra
     {
-        // instanciamos CD_Compra en la capa de Negocio
+        // instanciamos CD_Compra en la capa de Negocio para acceder a los metodos que contienen las consultas
+        // en sql server
         private CD_Compra objcd_Compra = new CD_Compra();
 
         public int ObtenerCorrelativo()
@@ -20,7 +21,7 @@ namespace CapaDeNegocio
             return objcd_Compra.ObtenerCorrelativo();
         }
 
-        // creamos y llamamos a los metodos de registrar, editar y eliminar Compra
+        // creamos y llamamos a los metodos de registrar, ObtenerCompra de la Compra
         public bool RegistrarCompra(Compra objCompra, DataTable DetalleCompra, out string Mensaje)
         {
             // devolvemos el metodo de listar la tabla de Compras

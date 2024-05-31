@@ -1,7 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\CapaDePresentacion",
+    "\\ConsultasSQL"
   ],
-  "SelectedNode": "\\CapaDePresentacion.sln",
+  "SelectedNode": "\\ConsultasSQL\\ResumenDeLasConsultas.txt",
   "PreviewInSolutionExplorer": false
 }
